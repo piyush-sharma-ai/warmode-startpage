@@ -1,0 +1,71 @@
+/* ============================================================================
+   RESET
+   ----------------------------------------------------------------------------
+   MUST stay in its own layer, declared first.
+
+   Unlayered CSS outranks every @layer, so a bare `* { margin: 0 }` here would
+   silently override every margin declared in layout.css / components.css and
+   collapse the whole page into a cramped block. Wrapping the reset in
+   `@layer reset` (imported before tokens.css) makes it the lowest-priority
+   layer, so component spacing wins.
+   ============================================================================ */
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+
+  #root,
+  #__next {
+    isolation: isolate;
+  }
+
+  /* `hidden` must win over any component `display` rule. The !important guard
+     in effects.css reinforces this, since layers reverse !important priority. */
+  [hidden] {
+    display: none;
+  }
+}

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="agni">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WarMode — A calm, distraction-free CyberSec & Developer startpage.">
+    <title>WarMode</title>
+    <!-- Apply the saved palette before first paint so there is no theme flash. -->
+    <script>
+        (function () {
+            try {
+                var dark = localStorage.getItem('traichu_dark');
+                var id = dark === '0' ? 'daylight' : localStorage.getItem('traichu_theme_id');
+                if (!id && dark === '0') id = 'daylight';
+                if (id) {
+                    document.documentElement.setAttribute('data-theme', id);
+                    if (dark === '0') document.documentElement.classList.add('light-mode');
+                }
+            } catch (e) { /* storage unavailable: fall back to the markup default */ }
+        })();
+    </script>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicons-warmode/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicons-warmode/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicons-warmode/apple-touch-icon.png">
+    <script src="js/bundle.js" defer></script>
+    <link rel="stylesheet" href="css/main.css">
+
+    <!-- ================================================================
+         Terminal-style header: prompt + live timestamp + banner.
+         Kept inline (unlayered) so it wins over the layered css/*.css
+         without touching any other file.
+         ============================================================= -->
+    <style>
+      /* ---- Two-line terminal prompt ---------------------------------- */
+      #date-time.term {
+        /* Terminal palette. Explicit rather than theme tokens so the three
+           timestamp components stay clearly distinct in every palette
+           (Agni's primary is orange, which would collide with the minutes). */
+        --t-red: #ff5f56;
+        --t-blue: #58a6ff;
+        --t-yellow: #e3b341;
+        --t-green: #7ee787;
+        --t-grey: #8b949e;
+
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4, 20px);
+        font-family: var(--font-mono);
+        white-space: nowrap;
+      }
+
+      /* Light mode needs darker variants to stay above AA contrast. */
+      [data-theme='daylight'] #date-time.term {
+        --t-red: #c4322b;
+        --t-blue: #1c66dd;
+        --t-yellow: #8a6100;
+        --t-green: #1a7f37;
+        --t-grey: #6b6156;
+      }
+
+      .term__prompt {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1.32;
+        letter-spacing: 0;
+      }
+
+      .term__line {
+        display: flex;
+        align-items: baseline;
+      }
+
+      /* structure: ┌──(  )-[  ]  └─ */
+      .term__dim {
+        color: var(--t-grey);
+        font-weight: 700;
+      }
+
+      /* root💀kali  — bold red */
+      .term__user {
+        color: var(--t-red);
+        font-weight: 700;
+      }
+
+      /* ~  — path */
+      .term__path {
+        color: var(--t-blue);
+        font-weight: 700;
+      }
+
+      /* #  — root prompt glyph, bold red */
+      .term__root {
+        color: var(--t-red);
+        font-weight: 700;
+      }
+
+      /* ---- Live timestamp -------------------------------------------- */
+      .term__clock {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 2px;
+        padding: 0.28rem 0.7rem;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm, 6px);
+        background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
+        font-family: var(--font-mono);
+        font-size: 14px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        user-select: none;
+        transition: border-color 150ms ease, background-color 150ms ease;
+      }
+
+      .term__clock:hover {
+        border-color: var(--color-border-hover);
+        background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+      }
+
+      .term__clock:focus-visible {
+        outline: var(--focus-ring, 2px solid var(--color-primary));
+        outline-offset: 2px;
+      }
+
+      /* Hours / minutes / seconds each get their own colour. */
+      .tc-h {
+        color: var(--t-blue);
+      }
+
+      .tc-m {
+        color: var(--t-yellow);
+      }
+
+      .tc-s {
+        color: var(--t-green);
+      }
+
+      .tc-sep {
+        color: var(--t-grey);
+      }
+
+      .tc-icon {
+        color: var(--t-red);
+        margin-right: 0.2rem;
+      }
+
+      /* Keep timer.js's own clock node out of the layout; the visible clock
+         above is driven by the inline script at the end of <body>. */
+      #clock-display {
+        display: none !important;
+      }
+
+      /* ---- Banner (hero heading + message) --------------------------- */
+      #greeting {
+        font-size: clamp(1.75rem, 3.8vw, 2.75rem);
+      }
+
+      #subline {
+        margin-top: var(--spacing-2, 12px);
+      }
+
+      #subline-text {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 0.92rem;
+        font-weight: 500;
+        line-height: 1.7;
+        letter-spacing: 0;
+        color: var(--color-text-secondary);
+        white-space: pre-line;
+      }
+
+      /* ---- Responsive ------------------------------------------------ */
+      @media (max-width: 860px) {
+        #date-time.term {
+          flex-wrap: wrap;
+          gap: var(--spacing-2, 12px);
+        }
+
+        .term__prompt {
+          font-size: 13.5px;
+        }
+
+        .term__clock {
+          font-size: 13px;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .term__prompt {
+          font-size: 12.5px;
+        }
+
+        .term__clock {
+          font-size: 12px;
+          padding: 0.22rem 0.55rem;
+        }
+
+        #subline-text {
+          font-size: 0.86rem;
+        }
+      }
+    </style>
+
+    <!-- Seed the editable hero/prompt fields once, before the deferred bundle
+         runs, so hero.js loads the new banner instead of its old defaults.
+         Only fills keys that are absent, so later edits via edit mode persist. -->
+    <script>
+      (function () {
+        try {
+          var seeds = {
+            traichu_hero_greet: 'Welcome Intruder',
+            traichu_hero_sub: 'Just Stay Fucking Hard MF !!!.\nI am Just Not You !!!\n"I dont Stop when I am tired,\nI only stop when I am done"',
+            traichu_prompt_user: 'root💀kali',
+            traichu_prompt_path: '~',
+            traichu_prompt_hash: '#'
+          };
+          for (var k in seeds) {
+            if (Object.prototype.hasOwnProperty.call(seeds, k) && !localStorage.getItem(k)) {
+              localStorage.setItem(k, seeds[k]);
+            }
+          }
+        } catch (e) { /* storage unavailable: markup defaults still apply */ }
+      })();
+    </script>
+</head>
+<body>
+    <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+
+    <!-- Floating Action Buttons (Bottom Right) -->
+    <div class="fab-group zen-target">
+        <button id="reset-sites-btn" class="fab-btn" onclick="restoreDefaultSites()" title="Restore All Default Sites, Emails, Tools & Cheat-Sheets" style="display:none;">↺</button>
+        <button id="edit-mode-btn" class="fab-btn" onclick="toggleEditMode()" title="Toggle Edit Mode (⌥E)">✏️</button>
+    </div>
+
+    <main>
+        <header>
+            <section id="date-time" class="term">
+                <div class="term__prompt" aria-label="Terminal prompt">
+                    <div class="term__line"><span class="term__dim" aria-hidden="true">┌──(</span><span id="prompt-user" class="term__user" onblur="saveHeroText()" spellcheck="false">root💀kali</span><span class="term__dim" aria-hidden="true">)-[</span><span id="prompt-path" class="term__path" onblur="saveHeroText()" spellcheck="false">~</span><span class="term__dim" aria-hidden="true">]</span></div>
+                    <div class="term__line"><span class="term__dim" aria-hidden="true">└─</span><span id="prompt-hash" class="term__root" onblur="saveHeroText()" spellcheck="false">#</span></div>
+                </div>
+                <span id="clock-display" aria-hidden="true" hidden>00:00:00</span><span id="term-clock" class="term__clock" onclick="togglePomodoro()" role="timer" aria-live="off" title="Live clock — click to start/stop 25m Pomodoro (⌥P)"></span>
+            </section>
+            <div id="day-progress" title="Share of today elapsed">
+                <div><b id="dp-bar"></b></div>
+                <span id="dp-txt"></span>
+            </div>
+            <section id="weather">
+                <button type="button" id="dark-mode-toggle" class="theme-switch" role="switch" aria-checked="true"
+                        onclick="toggleDarkMode()" title="Toggle Dark Mode (⌥D)" aria-label="Toggle Dark Mode">
+                    <span class="theme-switch__track" aria-hidden="true">
+                        <span class="theme-switch__thumb">
+                            <svg class="theme-switch__icon theme-switch__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <circle cx="12" cy="12" r="4"></circle>
+                                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+                            </svg>
+                            <svg class="theme-switch__icon theme-switch__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                            </svg>
+                        </span>
+                    </span>
+                    <span class="theme-switch__text" id="dark-mode-label">Dark</span>
+                </button>
+                <span id="audio-status" class="audio-tag" onclick="cycleAudio()" title="Click or press ⌥A for Focus Soundscape (Brown Noise / Pink Rain / 40Hz Gamma)">🎧 Audio <kbd>⌥A</kbd></span>
+                <!-- Pomodoro status appears here only while a timer is running. -->
+                <span id="sys-status" class="status-tag" role="status" aria-live="polite" hidden></span>
+            </section>
+        </header>
+
+        <section id="app">
+            <div id="hero">
+                <!-- Animated Cyber-Zen Reactor Mandala -->
+                <aside id="zen-aside" onclick="toggleBreathing()" title="Click for 60s Box Breathing Pacer (⌥B)">
+                    <svg class="cyber-zen-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+                        <circle class="cz-ring-outer" cx="60" cy="60" r="54" stroke="var(--color-primary)" stroke-width="1.5" stroke-opacity="0.35" stroke-dasharray="6 6" />
+                        <circle class="cz-ring-mid" cx="60" cy="60" r="44" stroke="var(--color-primary)" stroke-width="1.8" stroke-opacity="0.55" stroke-dasharray="28 14" />
+                        <polygon class="cz-poly" points="60,18 96,39 96,81 60,102 24,81 24,39" stroke="var(--color-warning)" stroke-width="1.5" stroke-opacity="0.45" fill="rgba(255,255,255,0.015)" />
+                        <polygon class="cz-poly-inner" points="60,26 89,77 31,77" stroke="var(--color-primary)" stroke-width="1.2" stroke-opacity="0.35" />
+                        <polygon class="cz-poly-inner" points="60,94 89,43 31,43" stroke="var(--color-primary)" stroke-width="1.2" stroke-opacity="0.35" />
+                        <circle class="cz-core-ring" cx="60" cy="60" r="18" stroke="var(--color-text-primary)" stroke-width="1.5" stroke-opacity="0.7" />
+                        <circle class="cz-core-dot" cx="60" cy="60" r="7" fill="var(--color-primary)" />
+                        <line x1="60" y1="2" x2="60" y2="12" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" />
+                        <line x1="60" y1="108" x2="60" y2="118" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" />
+                        <line x1="2" y1="60" x2="12" y2="60" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" />
+                        <line x1="108" y1="60" x2="118" y2="60" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </aside>
+                <div class="hero-text">
+                    <h1 id="greeting" onblur="saveHeroText()" spellcheck="false">Welcome Intruder</h1>
+                    <p id="subline">
+                        <span id="subline-text" onblur="saveHeroText()" spellcheck="false">Just Stay Fucking Hard MF !!!.
+I am Just Not You !!!
+"I dont Stop when I am tired,
+I only stop when I am done"</span>
+                    </p>
+                </div>
+            </div>
+
+            <div id="search-area">
+                <div id="focus-anchor" onclick="clearFocus()" title="Mission Accomplished? Click to clear"></div>
+                <div id="breathe-anchor" onclick="toggleBreathing()" title="Click to stop Box Breathing"></div>
+
+                <section id="search">
+                    <form id="search-form" onsubmit="handleSearch(event)">
+                        <input type="text" id="q" placeholder="Search Google or type/click a tool below... (Press / or ⌘K to focus)" autofocus autocomplete="off">
+                        <button type="button" class="search-shortcut-hint" onclick="toggleShortcutsModal()" title="View All Shortcuts & Commands (⌥K)">⌨️ Keys <kbd>⌥K</kbd></button>
+                    </form>
+
+                    <!-- Live Omni-Suggestions & Command Output Overlay.
+                         Anchored to #search so it opens directly under the input
+                         rather than below the Instant Tools bar. -->
+                    <div id="omni-suggestions" role="listbox"></div>
+                    <div id="cheat-overlay">
+                        <div class="overlay-bar">
+                            <span id="overlay-title">OUTPUT</span>
+                            <div class="overlay-actions">
+                                <button type="button" id="edit-cheat-btn" onclick="editCurrentCheatSheet()" style="display:none;" title="Edit this Cheat-Sheet">✏️ Edit</button>
+                                <button type="button" onclick="copyOverlayText()">📋 Copy</button>
+                                <button type="button" onclick="closeCheatOverlay()">Esc ×</button>
+                            </div>
+                        </div>
+                        <pre id="overlay-content"></pre>
+                    </div>
+                </section>
+
+                <!-- Dynamic & Editable Instant Tools / Cheat-Sheets Bar -->
+                <div id="quick-cmd-bar" class="zen-target" aria-label="Instant Tools"></div>
+            </div>
+
+            <!-- Dynamic Editable Dock -->
+            <div id="dock-wrap" class="zen-target">
+                <nav id="dock">
+                    <ul id="dock-list">
+                        <!-- Fixed Gmail Menu Button at the end -->
+                        <li class="fixed-dock">
+                            <a href="#" id="gmail-btn" title="Root Mailboxes (⌥M)" onclick="toggleGmailMenu(event)">
+                                <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+                            </a>
+                        </li>
+                        <li><button class="edit-toggle add-dock-btn" onclick="openDockModal()" title="Add Dock App">+</button></li>
+                    </ul>
+                </nav>
+
+                <!-- Dynamic & Editable Gmail Dropdown -->
+                <div id="gmail-menu" role="menu">
+                    <div class="gm-header-row">
+                        <div class="gm-title">Root Access: Mailboxes</div>
+                        <button type="button" class="edit-toggle gm-add-btn" onclick="openGmailModal()" title="Add New Email Account">+ Email</button>
+                    </div>
+                    <div id="gmail-list">
+                        <!-- JS dynamically renders editable email accounts here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3-in-1 Power Panel: Tasks, Daily Habits, & Quick Snippets -->
+            <section id="notes-widget">
+                <div class="widget-header-bar">
+                    <div class="widget-tabs">
+                        <button type="button" class="w-tab active" data-tab="tasks" onclick="switchWidgetTab('tasks')">&gt; TODO <span id="todo-count"></span></button>
+                        <button type="button" class="w-tab" data-tab="habits" onclick="switchWidgetTab('habits')">&gt; HABITS</button>
+                        <button type="button" class="w-tab" data-tab="snippets" onclick="switchWidgetTab('snippets')">&gt; SNIPS</button>
+                    </div>
+                    <button type="button" id="clear-done-btn" class="subtle-action" onclick="clearDoneTodos()" title="Remove completed tasks">Clear</button>
+                </div>
+
+                <!-- Tab 1: Todo Tracker -->
+                <div id="tab-tasks" class="widget-pane active">
+                    <input type="text" id="todo-input" class="todo-input" placeholder="Task (!h, !m, !l for priority) + Enter..." onkeydown="addTodo(event)">
+                    <ul id="todo-list"></ul>
+                </div>
+
+                <!-- Tab 2: Daily Resetting Habits -->
+                <div id="tab-habits" class="widget-pane">
+                    <div class="pane-subhead">
+                        <input type="text" id="habit-input" class="todo-input" placeholder="Add daily habit + Enter..." onkeydown="addHabit(event)">
+                        <span id="streak-badge" class="streak-tag" title="Consecutive days with every habit completed">🔥 0d</span>
+                    </div>
+                    <ul id="habit-list"></ul>
+                </div>
+
+                <!-- Tab 3: One-Click Copy Snippets -->
+                <div id="tab-snippets" class="widget-pane">
+                    <input type="text" id="snippet-input" class="todo-input" placeholder="Title :: Command + Enter..." onkeydown="addSnippet(event)">
+                    <ul id="snippet-list"></ul>
+                </div>
+            </section>
+
+            <!-- 4 Bookmarks Sections (Dynamically rendered & editable in GUI) -->
+            <section id="bookmarks" class="zen-target"></section>
+        </section>
+    </main>
+
+    <!-- Subconscious Scratchpad & Telemetry Drawer -->
+    <section id="scratchpad-wrap" class="zen-target">
+        <div class="sp-top-bar">
+            <div class="widget-header" style="color: var(--color-primary); margin: 0;">&gt; BRAIN_DUMP.md</div>
+            <div class="sp-actions">
+                <span id="sp-stats">0w · 0c</span>
+                <button type="button" onclick="downloadScratchpad()" title="Download as Markdown">.MD ↓</button>
+                <button type="button" onclick="exportAllData()" title="Backup all settings & links to JSON">Backup</button>
+                <button type="button" onclick="triggerImportData()" title="Restore from JSON backup">Restore</button>
+                <input type="file" id="import-file" accept=".json" style="display:none" onchange="importAllData(event)">
+            </div>
+        </div>
+        <textarea id="scratchpad" placeholder="Offload your mind here. It saves automatically in your browser..."></textarea>
+        <div class="sp-footer">
+            <div class="sp-pomo-title">7-DAY FOCUS TELEMETRY (🍅 SESSIONS)</div>
+            <div id="pomo-chart" class="pomo-chart"></div>
+        </div>
+    </section>
+
+    <!-- Visual Keyboard Shortcuts & Command Guide Modal (⌥K) -->
+    <div id="shortcuts-modal" class="modal-overlay">
+        <div class="modal-box shortcuts-box">
+            <div class="overlay-bar" style="margin-bottom: 0.8rem;">
+                <span style="color:var(--color-primary); font-size:0.88rem;">KEYBOARD SHORTCUTS & OMNI COMMANDS (CLICK ANY TO RUN)</span>
+                <button type="button" class="close-pill" onclick="closeShortcutsModal()">Esc ×</button>
+            </div>
+            <div class="shortcuts-grid">
+                <div class="sc-col">
+                    <h4>⚡ System Shortcuts</h4>
+                    <div class="sc-row" onclick="toggleZenMode(); closeShortcutsModal();"><span>Zen Mode (Hide Clutter)</span><kbd>⌥ + Z</kbd></div>
+                    <div class="sc-row" onclick="togglePomodoro(); closeShortcutsModal();"><span>Start/Stop 25m Pomodoro</span><kbd>⌥ + P</kbd></div>
+                    <div class="sc-row" onclick="cycleAudio();"><span>Focus Audio (Brown/Pink/40Hz)</span><kbd>⌥ + A</kbd></div>
+                    <div class="sc-row" onclick="toggleBreathing(); closeShortcutsModal();"><span>Box Breathing Pacer (4-4-4-4)</span><kbd>⌥ + B</kbd></div>
+                    <div class="sc-row" onclick="toggleGmailMenu(event); closeShortcutsModal();"><span>Open Root Mailboxes</span><kbd>⌥ + M</kbd></div>
+                    <div class="sc-row" onclick="toggleScratchpad(); closeShortcutsModal();"><span>Open Brain Dump Pad</span><kbd>⌥ + S</kbd></div>
+                    <div class="sc-row" onclick="cycleTheme(); closeShortcutsModal();"><span>Cycle 17 Dark Themes</span><kbd>⌥ + T</kbd></div>
+                    <div class="sc-row" onclick="toggleDarkMode(); closeShortcutsModal();"><span>Toggle Dark / Light Mode</span><kbd>⌥ + D</kbd></div>
+                    <div class="sc-row" onclick="toggleEditMode(); closeShortcutsModal();"><span>GUI Edit Mode (Edit Everything)</span><kbd>⌥ + E</kbd></div>
+                    <div class="sc-row" onclick="closeShortcutsModal(); document.getElementById('q').focus();"><span>Focus Search / Command Bar</span><kbd>/ or ⌘K</kbd></div>
+                </div>
+                <div class="sc-col">
+                    <h4>🛠️ OffSec & Dev Commands</h4>
+                    <div class="sc-row" onclick="runQuickCmd('cheat dorks'); closeShortcutsModal();"><span>Google Dorks Cheat-Sheet</span><kbd>cheat dorks</kbd></div>
+                    <div class="sc-row" onclick="runQuickCmd('cheat linux'); closeShortcutsModal();"><span>Linux / OffSec Cheat-Sheet</span><kbd>cheat linux</kbd></div>
+                    <div class="sc-row" onclick="runQuickCmd('cheat privesc'); closeShortcutsModal();"><span>Linux PrivEsc Checklist</span><kbd>cheat privesc</kbd></div>
+                    <div class="sc-row" onclick="runQuickCmd('rev 10.10.14.2 4444'); closeShortcutsModal();"><span>Reverse Shell Generator</span><kbd>rev [ip] [port]</kbd></div>
+                    <div class="sc-row" onclick="fillQuickCmd('b64 '); closeShortcutsModal();"><span>Base64 Encode / Decode</span><kbd>b64 [text]</kbd></div>
+                    <div class="sc-row" onclick="fillQuickCmd('jwt '); closeShortcutsModal();"><span>Decode JWT Token Locally</span><kbd>jwt [token]</kbd></div>
+                    <div class="sc-row" onclick="fillQuickCmd('hash '); closeShortcutsModal();"><span>SHA-256 & SHA-1 Hash</span><kbd>hash [text]</kbd></div>
+                    <div class="sc-row" onclick="runQuickCmd('cidr 10.10.14.0/24'); closeShortcutsModal();"><span>Subnet / CIDR Calculator</span><kbd>cidr [ip/mask]</kbd></div>
+                    <div class="sc-row" onclick="runQuickCmd('pass 20'); closeShortcutsModal();"><span>Copy 20-Char Secure Password</span><kbd>pass [len]</kbd></div>
+                </div>
+                <div class="sc-col">
+                    <h4>🚀 Search Bangs & Productivity</h4>
+                    <div class="sc-row" onclick="fillQuickCmd('gh '); closeShortcutsModal();"><span>Search GitHub Directly</span><kbd>gh [query]</kbd></div>
+                    <div class="sc-row" onclick="fillQuickCmd('yt '); closeShortcutsModal();"><span>Search YouTube Directly</span><kbd>yt [query]</kbd></div>
+                    <div class="sc-row" onclick="fillQuickCmd('sh '); closeShortcutsModal();"><span>Search Shodan.io</span><kbd>sh [query]</kbd></div>
+                    <div class="sc-row" onclick="fillQuickCmd('cve '); closeShortcutsModal();"><span>Search NIST CVE Database</span><kbd>cve [query]</kbd></div>
+                    <div class="sc-row" onclick="fillQuickCmd('ai '); closeShortcutsModal();"><span>Ask ChatGPT Directly</span><kbd>ai [prompt]</kbd></div>
+                    <div class="sc-row" onclick="fillQuickCmd('add '); closeShortcutsModal();"><span>Quick Add Task (!h, !m, !l)</span><kbd>add [task] !h</kbd></div>
+                    <div class="sc-row" onclick="fillQuickCmd('focus '); closeShortcutsModal();"><span>Lock In Primary Mission</span><kbd>focus [goal]</kbd></div>
+                    <div class="sc-row" onclick="runQuickCmd('pomo 50'); closeShortcutsModal();"><span>Custom 50m Deep Work Timer</span><kbd>pomo 50</kbd></div>
+                    <div class="sc-row" onclick="openToolModal(); closeShortcutsModal();"><span>Create Custom Cheat-Sheet / Tool</span><kbd>+ Cheat</kbd></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding / Editing Custom Cheat-Sheets & Instant Tools -->
+    <div id="tool-modal" class="modal-overlay">
+        <div class="modal-box tool-modal-box">
+            <div class="modal-title" id="tool-modal-title">CREATE / EDIT INSTANT TOOL OR CHEAT-SHEET</div>
+            <input type="hidden" id="tool-edit-idx" value="">
+            <div class="tool-type-switch">
+                <button type="button" id="tt-cheat-btn" class="tt-btn active" onclick="setToolModalMode('cheat')">📜 Custom Cheat-Sheet</button>
+                <button type="button" id="tt-cmd-btn" class="tt-btn" onclick="setToolModalMode('cmd')">⚡ Quick Command Pill</button>
+            </div>
+            <input type="text" id="tool-label-input" placeholder="Button Label (e.g., 🦀 Rust or ⚡ AD)" autocomplete="off">
+            <input type="text" id="tool-key-input" placeholder="Cheat Key (e.g., rust -> runs 'cheat rust')" autocomplete="off">
+            <textarea id="tool-content-input" rows="7" placeholder="Write your Cheat-Sheet content here (each line or command)..."></textarea>
+            <div class="modal-btns">
+                <button type="button" onclick="closeToolModal()">Cancel</button>
+                <button type="button" class="primary" onclick="saveCustomTool()">Save Tool</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding / Editing Bookmarks -->
+    <div id="site-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title" id="site-modal-title">ADD / EDIT TARGET_NODE</div>
+            <input type="text" id="modal-site-name" placeholder="Site Name (e.g., Test Site)" autocomplete="off">
+            <input type="url" id="modal-site-url" placeholder="URL (e.g., https://test.com)" autocomplete="off">
+            <input type="hidden" id="modal-section-idx">
+            <input type="hidden" id="modal-link-idx" value="">
+            <div class="modal-btns">
+                <button type="button" onclick="closeSiteModal()">Cancel</button>
+                <button type="button" class="primary" onclick="saveNewSite()">Save Target</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Adding / Editing Dock Items -->
+    <div id="dock-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title" id="dock-modal-title">ADD / EDIT DOCK APP</div>
+            <input type="hidden" id="dock-edit-idx" value="">
+            <input type="text" id="dock-site-name" placeholder="App Name (e.g., Test App)" autocomplete="off">
+            <input type="url" id="dock-site-url" placeholder="URL (e.g., https://test.com)" autocomplete="off">
+            <input type="text" id="dock-site-color" placeholder="Color Hex (e.g., #3fd9e8) - Optional" autocomplete="off">
+            <div class="modal-btns">
+                <button type="button" onclick="closeDockModal()">Cancel</button>
+                <button type="button" class="primary" onclick="saveDockSite()">Save App</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding / Editing Gmail / Email Accounts -->
+    <div id="gmail-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title" id="gmail-modal-title">ADD / EDIT EMAIL ACCOUNT</div>
+            <input type="hidden" id="gmail-edit-idx" value="">
+            <input type="text" id="gmail-name-input" placeholder="Display Name (e.g., Work Mail)" autocomplete="off">
+            <input type="email" id="gmail-email-input" placeholder="Email ID (e.g., user1@test.com)" autocomplete="off">
+            <input type="text" id="gmail-color-input" placeholder="Badge Color (e.g., #00897b) - Optional" autocomplete="off">
+            <input type="url" id="gmail-url-input" placeholder="Custom URL (Optional - defaults to Gmail)" autocomplete="off">
+            <div class="modal-btns">
+                <button type="button" onclick="closeGmailModal()">Cancel</button>
+                <button type="button" class="primary" onclick="saveGmailAccount()">Save Email</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subtle Toast Notification -->
+    <div id="toast" aria-live="polite"></div>
+    
+    <!-- Always-Visible Bottom Shortcut Bar -->
+    <div id="hint" class="zen-target">
+        <button type="button" onclick="toggleZenMode()" title="Hide/Show All Panels">🧘 Zen <kbd data-k="Z">⌥Z</kbd></button>
+        <button type="button" onclick="togglePomodoro()" title="Start/Stop 25m Focus Timer">⏱ Pomo <kbd data-k="P">⌥P</kbd></button>
+        <button type="button" onclick="cycleAudio()" title="Cycle Brown Noise / Pink Rain / 40Hz Gamma">🎧 Sound <kbd data-k="A">⌥A</kbd></button>
+        <button type="button" onclick="toggleBreathing()" title="Start 4-4-4-4 Box Breathing">🌬️ Breathe <kbd data-k="B">⌥B</kbd></button>
+        <button type="button" onclick="toggleGmailMenu(event)" title="Open Mailboxes">✉️ Mail <kbd data-k="M">⌥M</kbd></button>
+        <button type="button" onclick="toggleScratchpad()" title="Open Brain Dump & Stats">📝 Pad <kbd data-k="S">⌥S</kbd></button>
+        <button type="button" onclick="cycleTheme()" title="Switch Dark Theme (⌥T)">🎨 <kbd id="theme-name">Agni</kbd> <kbd data-k="T">⌥T</kbd></button>
+        <button type="button" onclick="toggleDarkMode()" title="Toggle Dark / Light Mode (⌥D)">🌗 Dark <kbd data-k="D">⌥D</kbd></button>
+        <button type="button" onclick="toggleEditMode()" title="Customize Everything in GUI (⌥E)">✏️ Edit <kbd data-k="E">⌥E</kbd></button>
+        <button type="button" onclick="toggleShortcutsModal()" title="See All Shortcuts & Commands (⌥K)">⌨️ All Keys <kbd data-k="K">⌥K</kbd></button>
+    </div>
+
+    <!-- ================================================================
+         Live terminal timestamp (HH:MM:SS, one colour per component).
+         Also mirrors the Pomodoro countdown while a session is running.
+         ============================================================= -->
+    <script>
+      (function () {
+        var el = document.getElementById('term-clock');
+        if (!el) return;
+
+        function pad(n) {
+          return n < 10 ? '0' + n : String(n);
+        }
+
+        // Read the live Pomodoro state if the bundle is ready; null otherwise.
+        function pomodoroCountdown() {
+          try {
+            var timer = window.WarMode && window.WarMode.req && window.WarMode.req('timer');
+            if (timer && typeof timer.getPomodoroState === 'function') {
+              var s = timer.getPomodoroState();
+              if (s && s.isPomodoroActive && typeof s.pomodoroSeconds === 'number') {
+                return pad(Math.floor(s.pomodoroSeconds / 60)) + ':' + pad(s.pomodoroSeconds % 60);
+              }
+            }
+          } catch (e) { /* bundle not ready or API changed */ }
+          return null;
+        }
+
+        function span(cls, text) {
+          return '<span class="' + cls + '">' + text + '</span>';
+        }
+
+        function render() {
+          var countdown = pomodoroCountdown();
+
+          if (countdown) {
+            var parts = countdown.split(':');
+            el.innerHTML =
+              span('tc-icon', '⏱') +
+              span('tc-h', parts[0]) +
+              span('tc-sep', ':') +
+              span('tc-m', parts[1]);
+            return;
+          }
+
+          var d = new Date();
+          el.innerHTML =
+            span('tc-h', pad(d.getHours())) +
+            span('tc-sep', ':') +
+            span('tc-m', pad(d.getMinutes())) +
+            span('tc-sep', ':') +
+            span('tc-s', pad(d.getSeconds()));
+        }
+
+        render();
+        setInterval(render, 1000);
+      })();
+    </script>
+</body>
+</html>

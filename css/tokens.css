@@ -1,0 +1,210 @@
+@layer tokens {
+  :root {
+    --color-primary: #2F81F7;
+    --color-primary-hover: #388BFD;
+    --color-secondary: #238636;
+    --color-secondary-hover: #2EA043;
+    --color-neutral: #8B949E;
+    --color-background: #0D1117;
+    --color-surface: #161B22;
+    --color-surface-elevated: #1C2128;
+    --color-surface-overlay: #21262D;
+    --color-text-primary: #E6EDF3;
+    --color-text-secondary: #8B949E;
+    --color-border: #30363D;
+    --color-border-hover: #484F58;
+    --color-success: #3FB950;
+    --color-warning: #D29922;
+    --color-error: #F85149;
+    --color-backdrop: rgba(1, 4, 9, 0.8);
+
+    /* Mode-aware surface tints.
+       Derived from --color-text-primary, which is LIGHT in every dark theme and
+       DARK in the daylight theme. That makes these overlays automatically
+       correct in both modes: a soft lift on dark, a soft shade on light.
+       Declared on :root so var() substitution resolves against the active
+       theme palette on this same element. */
+    --tint-1: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
+    --tint-2: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
+    --tint-3: color-mix(in srgb, var(--color-text-primary) 9%, transparent);
+    --tint-4: color-mix(in srgb, var(--color-text-primary) 14%, transparent);
+    --tint-strong: color-mix(in srgb, var(--color-text-primary) 22%, transparent);
+    --inset-field: color-mix(in srgb, var(--color-background) 45%, transparent);
+
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 20px;
+    --font-size-xl: 24px;
+    --font-size-2xl: 32px;
+
+    --line-height-tight: 1.12;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.65;
+
+    --letter-spacing-tight: -0.02em;
+    --letter-spacing-normal: 0;
+    --letter-spacing-wide: 0.04em;
+
+    --spacing-1: 6px;
+    --spacing-2: 12px;
+    --spacing-3: 16px;
+    --spacing-4: 20px;
+    --spacing-5: 24px;
+    --spacing-6: 32px;
+    --spacing-7: 40px;
+    --spacing-8: 48px;
+    --spacing-9: 56px;
+    --spacing-10: 64px;
+    --spacing-12: 80px;
+    --spacing-16: 96px;
+
+    --radius-xs: 3px;
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-pill: 9999px;
+
+    --shadow-subtle: 0 1px 0 rgba(27, 31, 36, 0.04);
+    --shadow-elevated: 0 8px 24px rgba(1, 4, 9, 0.6);
+    --shadow-modal: 0 16px 48px rgba(0, 0, 0, 0.85);
+
+    --transition-fast: 100ms ease;
+    --transition-normal: 150ms ease;
+    --transition-slow: 200ms ease;
+
+    --container-narrow: 768px;
+    --container-readable: 1012px;
+    --container-wide: 1280px;
+    --container-max: 1400px;
+
+    --z-index-dropdown: 100;
+    --z-index-sticky: 150;
+    --z-index-modal: 300;
+    --z-index-toast: 400;
+    --z-index-fixed: 200;
+
+    --focus-ring: 2px solid var(--color-primary);
+    --focus-ring-offset: 2px;
+  }
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+  }
+
+  ::selection {
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+  }
+
+  :focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-xs);
+  }
+
+  input,
+  textarea,
+  select {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    caret-color: var(--color-primary);
+  }
+
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-regular);
+    font-size: 0.9em;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  kbd {
+    background-color: rgba(110, 118, 129, 0.15);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xs);
+    padding: 0.1em 0.4em;
+    font-size: 0.75em;
+    font-weight: var(--font-weight-medium);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  ul,
+  ol {
+    list-style: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

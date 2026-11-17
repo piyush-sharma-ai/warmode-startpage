@@ -1,0 +1,223 @@
+@layer effects {
+  /* `hidden` must always win over a component's `display`. reset.css declares
+     this too, but it lives in an earlier layer and layers reverse !important
+     priority, so the authoritative guard belongs in the last layer. */
+  [hidden] {
+    display: none !important;
+  }
+
+  /* =========================================================
+     AURORA BACKDROP
+     Three soft light blooms that drift slowly behind the app.
+     Purely decorative: no DOM semantics, hidden from AT.
+     ========================================================= */
+  .aurora {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  .aurora i {
+    position: absolute;
+    display: block;
+    border-radius: var(--radius-pill);
+    filter: blur(90px);
+    will-change: transform;
+  }
+
+  .aurora i:nth-child(1) {
+    width: 42vw;
+    height: 42vw;
+    top: -14vw;
+    left: -8vw;
+    background: color-mix(in srgb, var(--color-primary) 42%, transparent);
+    animation: drift 26s ease-in-out infinite alternate;
+  }
+
+  .aurora i:nth-child(2) {
+    width: 38vw;
+    height: 38vw;
+    bottom: -16vw;
+    right: -6vw;
+    background: color-mix(in srgb, var(--color-warning) 32%, transparent);
+    animation: drift 34s ease-in-out infinite alternate-reverse;
+  }
+
+  .aurora i:nth-child(3) {
+    width: 30vw;
+    height: 30vw;
+    top: 32%;
+    left: 52%;
+    background: color-mix(in srgb, var(--color-secondary) 30%, transparent);
+    animation: drift 42s ease-in-out infinite alternate;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora i {
+      animation: none;
+    }
+  }
+
+  /* =========================================================
+     PREMIUM CHROME
+     Every palette in themes.css is a calm, low-strain scheme, so the
+     "premium app" treatment is universal rather than per-theme:
+       - subdued ambient bloom
+       - flat surfaces (no drop shadows, depth comes from tone layering)
+       - restrained selection + scrollbar treatment
+     effects.css is the last cascade layer, so these win over components.css.
+     ========================================================= */
+  .aurora {
+    opacity: 0.24;
+    filter: saturate(0.72);
+  }
+
+  .panel,
+  #search input,
+  #dock ul,
+  #notes-widget,
+  #bookmarks ul,
+  #cheat-overlay,
+  #omni-suggestions,
+  #gmail-menu,
+  #hint,
+  .modal-box,
+  #scratchpad-wrap {
+    box-shadow: none;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-primary) 32%, transparent);
+    color: var(--color-text-primary);
+  }
+
+  /* Thin, theme-tinted scrollbars instead of the heavy default. */
+  #todo-list,
+  #habit-list,
+  #snippet-list,
+  #bookmarks ul,
+  #gmail-list,
+  #cheat-overlay,
+  #omni-suggestions {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-hover) transparent;
+  }
+
+  /* =========================================================
+     LIGHT MODE (Dark Mode toggle off)
+     The daylight palette swaps in via [data-theme='daylight']; this
+     block only fixes the pieces that assume a dark canvas.
+     ========================================================= */
+  .light-mode .aurora {
+    opacity: 0.1;
+  }
+
+  .light-mode .hero-text h1 {
+    background: linear-gradient(100deg, var(--color-text-primary) 25%, var(--color-primary) 120%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .light-mode .prompt-cursor {
+    background: var(--color-primary);
+    box-shadow: none;
+  }
+
+  .light-mode .q-chip,
+  .light-mode .omni-badge,
+  .light-mode .search-shortcut-hint,
+  .light-mode kbd,
+  .light-mode #hint button {
+    background-color: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
+  }
+
+  .light-mode #day-progress > div {
+    background-color: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
+  }
+
+  .light-mode #toast {
+    background-color: color-mix(in srgb, var(--color-surface) 96%, transparent);
+  }
+
+  /* =========================================================
+     ZEN MODE TARGETS
+     Any element that should vanish in Zen Mode opts in with
+     .zen-target; toggleZenMode() flips .zen-hidden on them.
+     ========================================================= */
+  .zen-target {
+    transition: opacity var(--transition-normal) ease, transform var(--transition-normal) ease;
+  }
+
+  .zen-target.zen-hidden {
+    display: none !important;
+  }
+
+  /* =========================================================
+     CYBER-ZEN REACTOR — inner polygons + core ring
+     (the outer ring / mid ring / core dot are in components.css)
+     ========================================================= */
+  .cz-poly-inner {
+    transform-origin: 60px 60px;
+    animation: spinReverse 32s linear infinite;
+  }
+
+  .cz-poly-inner:nth-of-type(2) {
+    animation-duration: 38s;
+    animation-direction: normal;
+  }
+
+  .cz-core-ring {
+    transform-origin: 60px 60px;
+    animation: coreRingPulse 4s ease-in-out infinite;
+  }
+
+  @keyframes coreRingPulse {
+    0%, 100% { opacity: 0.45; transform: scale(0.94); }
+    50% { opacity: 0.9; transform: scale(1.06); }
+  }
+
+  /* Breathing guide active: make the reactor visibly inhale/exhale. */
+  #breathe-anchor.active ~ * .cyber-zen-svg,
+  body.breathing .cyber-zen-svg {
+    animation: zenBreathe 16s ease-in-out infinite;
+  }
+
+  #breathe-anchor {
+    transition: transform var(--transition-normal) ease, color var(--transition-normal) ease,
+      background-color var(--transition-normal) ease, border-color var(--transition-normal) ease;
+  }
+
+  #breathe-anchor.active {
+    transform: scale(var(--breathe-scale, 1));
+  }
+
+  @keyframes zenBreathe {
+    0%, 100% { transform: scale(0.94); }
+    25% { transform: scale(1.1); }
+    50% { transform: scale(1.1); }
+    75% { transform: scale(0.94); }
+  }
+
+  /* =========================================================
+     GMAIL MENU EMPTY STATE
+     ========================================================= */
+  .gm-empty {
+    padding: 0.8rem var(--spacing-4);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+  }
+
+  /* =========================================================
+     DOCK / BOOKMARK / TOOL REMOVE BUTTONS
+     Keep the always-hidden rule consistent with .delete-btn
+     ========================================================= */
+  .delete-btn.del-tool-btn,
+  .delete-btn.del-dock-btn,
+  .delete-btn.del-btn {
+    flex-shrink: 0;
+  }
+}

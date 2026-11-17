@@ -1,0 +1,389 @@
+/* ============================================================================
+   THEME PALETTES
+   ----------------------------------------------------------------------------
+   Every palette is a calm, low-strain dark scheme except [data-theme='daylight'],
+   which is the light-mode counterpart used when the Dark Mode toggle is off.
+
+   Design rules enforced here:
+     - Body text lands near 10:1 contrast on the background: comfortably
+       readable without the harsh, glaring contrast of pure white on black.
+     - Secondary labels sit near 5.5:1, still clear of the WCAG AA 4.5:1 floor.
+     - Accents are desaturated so nothing shouts for attention.
+     - No pure #000000 or #FFFFFF page surfaces.
+
+   Tokens only. Component-level polish per theme lives in effects.css, which is
+   declared after this layer so it can actually win the cascade.
+   ============================================================================ */
+
+@layer themes {
+
+
+  /* WarMode originals
+     ----------------- */
+
+  /* Ember — Warm charcoal with a muted ember accent. The original WarMode palette. */
+  [data-theme='agni'] {
+    --color-background: #14100E;
+    --color-surface: #1C1714;
+    --color-surface-elevated: #241D19;
+    --color-surface-overlay: #2C241E;
+    --color-text-primary: #C4BBB5;
+    --color-text-secondary: #94897E;
+    --color-border: #332A24;
+    --color-border-hover: #665D57;
+    --color-primary: #E08238;
+    --color-primary-hover: #D69664;
+    --color-secondary: #7FB98A;
+    --color-secondary-hover: #94BA97;
+    --color-success: #7FB98A;
+    --color-warning: #D9A24A;
+    --color-error: #D97070;
+    --color-backdrop: rgba(20, 16, 14, 0.8);
+  }
+
+  /* Deep Ocean — Deep navy with a soft cyan accent — cool and expansive. */
+  [data-theme='sagar'] {
+    --color-background: #0A1219;
+    --color-surface: #101B24;
+    --color-surface-elevated: #16232E;
+    --color-surface-overlay: #1C2B38;
+    --color-text-primary: #B4BEC6;
+    --color-text-secondary: #7B8F9E;
+    --color-border: #1E3040;
+    --color-border-hover: #52626F;
+    --color-primary: #64A4C3;
+    --color-primary-hover: #80ADC4;
+    --color-secondary: #6FBF9B;
+    --color-secondary-hover: #84BFA8;
+    --color-success: #6FBF9B;
+    --color-warning: #D8B26A;
+    --color-error: #DB7F7F;
+    --color-backdrop: rgba(10, 18, 25, 0.8);
+  }
+
+  /* Forest Moss — Dark forest green with sage accents — grounded and organic. */
+  [data-theme='van'] {
+    --color-background: #0B120C;
+    --color-surface: #111A12;
+    --color-surface-elevated: #182318;
+    --color-surface-overlay: #1F2C20;
+    --color-text-primary: #B6BFB7;
+    --color-text-secondary: #7D8F81;
+    --color-border: #243528;
+    --color-border-hover: #57655A;
+    --color-primary: #78A57A;
+    --color-primary-hover: #8EAE8F;
+    --color-secondary: #7FBE8C;
+    --color-secondary-hover: #90BE99;
+    --color-success: #7FBE8C;
+    --color-warning: #D3B36B;
+    --color-error: #D97F7F;
+    --color-backdrop: rgba(11, 18, 12, 0.8);
+  }
+
+  /* Cosmic Ether — Indigo-violet dusk with a soft lilac accent — quiet and spacious. */
+  [data-theme='akasha'] {
+    --color-background: #100D18;
+    --color-surface: #171326;
+    --color-surface-elevated: #1E1930;
+    --color-surface-overlay: #252039;
+    --color-text-primary: #BEB8C9;
+    --color-text-secondary: #8F84A7;
+    --color-border: #2B2442;
+    --color-border-hover: #5E5871;
+    --color-primary: #9C8FD6;
+    --color-primary-hover: #A89DD1;
+    --color-secondary: #7FBFA0;
+    --color-secondary-hover: #92BDAC;
+    --color-success: #7FBFA0;
+    --color-warning: #D5AE72;
+    --color-error: #D97C92;
+    --color-backdrop: rgba(16, 13, 24, 0.8);
+  }
+
+  /* Nordic Frost — Slate grey with pale ice blue — overcast and still. */
+  [data-theme='himadri'] {
+    --color-background: #1B2027;
+    --color-surface: #222831;
+    --color-surface-elevated: #2A313B;
+    --color-surface-overlay: #323A45;
+    --color-text-primary: #C6CBD1;
+    --color-text-secondary: #8F9AA8;
+    --color-border: #333D49;
+    --color-border-hover: #666F79;
+    --color-primary: #93ACC1;
+    --color-primary-hover: #A5B7C7;
+    --color-secondary: #8FBF9F;
+    --color-secondary-hover: #A0C3AE;
+    --color-success: #8FBF9F;
+    --color-warning: #D6BE86;
+    --color-error: #D98A8A;
+    --color-backdrop: rgba(27, 32, 39, 0.8);
+  }
+
+  /* Misty Pine — Deep teal-green with jade — damp forest air at dawn. */
+  [data-theme='aranya'] {
+    --color-background: #0B1413;
+    --color-surface: #111C1A;
+    --color-surface-elevated: #172422;
+    --color-surface-overlay: #1D2C29;
+    --color-text-primary: #B4C1BD;
+    --color-text-secondary: #78918A;
+    --color-border: #20332F;
+    --color-border-hover: #546561;
+    --color-primary: #6CA799;
+    --color-primary-hover: #85B0A6;
+    --color-secondary: #7FC49B;
+    --color-secondary-hover: #8FC3A5;
+    --color-success: #7FC49B;
+    --color-warning: #D2B273;
+    --color-error: #D98282;
+    --color-backdrop: rgba(11, 20, 19, 0.8);
+  }
+
+  /* Calm Dark — Neutral warm charcoal with dusty blue. The house neutral. */
+  [data-theme='calm'] {
+    --color-background: #12161B;
+    --color-surface: #191E25;
+    --color-surface-elevated: #20262E;
+    --color-surface-overlay: #272E38;
+    --color-text-primary: #B8C2CD;
+    --color-text-secondary: #87909C;
+    --color-border: #262D37;
+    --color-border-hover: #59616C;
+    --color-primary: #7DA4C2;
+    --color-primary-hover: #92AEC6;
+    --color-secondary: #86B893;
+    --color-secondary-hover: #95BBA4;
+    --color-success: #86B893;
+    --color-warning: #CBA96E;
+    --color-error: #CB8585;
+    --color-backdrop: rgba(18, 22, 27, 0.8);
+  }
+
+  /* Premium dark presets
+     -------------------- */
+
+  /* HackTheBox — Near-black with a softened lime accent — the HTB green, dialled back. */
+  [data-theme='htb'] {
+    --color-background: #0D1117;
+    --color-surface: #141A22;
+    --color-surface-elevated: #1B222B;
+    --color-surface-overlay: #222A34;
+    --color-text-primary: #B6BDC6;
+    --color-text-secondary: #818E9B;
+    --color-border: #242D38;
+    --color-border-hover: #575F6A;
+    --color-primary: #80A74E;
+    --color-primary-hover: #93AF78;
+    --color-secondary: #8FCB7A;
+    --color-secondary-hover: #9BC791;
+    --color-success: #8FCB7A;
+    --color-warning: #D8B45E;
+    --color-error: #DB7A7A;
+    --color-backdrop: rgba(13, 17, 23, 0.8);
+  }
+
+  /* Catppuccin — Mocha: purple-navy with pastel mauve. Soft, low-glare, beloved. */
+  [data-theme='catppuccin'] {
+    --color-background: #1E1E2E;
+    --color-surface: #282838;
+    --color-surface-elevated: #313244;
+    --color-surface-overlay: #3B3B4D;
+    --color-text-primary: #C1CAE7;
+    --color-text-secondary: #9699B1;
+    --color-border: #3A3A4E;
+    --color-border-hover: #696C84;
+    --color-primary: #BF9CE9;
+    --color-primary-hover: #C0ACE8;
+    --color-secondary: #A6E3A1;
+    --color-secondary-hover: #AEDCB6;
+    --color-success: #A6E3A1;
+    --color-warning: #F9E2AF;
+    --color-error: #F38BA8;
+    --color-backdrop: rgba(30, 30, 46, 0.8);
+  }
+
+  /* GitHub — GitHub Dark: neutral slate with the familiar accessible blue. */
+  [data-theme='github'] {
+    --color-background: #0D1117;
+    --color-surface: #161B22;
+    --color-surface-elevated: #1C2128;
+    --color-surface-overlay: #21262D;
+    --color-text-primary: #B7BDC3;
+    --color-text-secondary: #858D97;
+    --color-border: #30363D;
+    --color-border-hover: #5F656C;
+    --color-primary: #559FF3;
+    --color-primary-hover: #77AAE2;
+    --color-secondary: #3FB950;
+    --color-secondary-hover: #63BA72;
+    --color-success: #3FB950;
+    --color-warning: #D29922;
+    --color-error: #F85149;
+    --color-backdrop: rgba(13, 17, 23, 0.8);
+  }
+
+  /* VS Code — Dark+ : neutral graphite with the editor focus blue. */
+  [data-theme='vscode'] {
+    --color-background: #1A1A1A;
+    --color-surface: #212121;
+    --color-surface-elevated: #282828;
+    --color-surface-overlay: #2E2E2E;
+    --color-text-primary: #C4C4C4;
+    --color-text-secondary: #929292;
+    --color-border: #333333;
+    --color-border-hover: #666666;
+    --color-primary: #4FA7F4;
+    --color-primary-hover: #78B1E3;
+    --color-secondary: #8FBF7F;
+    --color-secondary-hover: #9FC094;
+    --color-success: #8FBF7F;
+    --color-warning: #D6B75E;
+    --color-error: #E88A7A;
+    --color-backdrop: rgba(26, 26, 26, 0.8);
+  }
+
+  /* Nord — Arctic slate blue-grey. Cool, flat, and famously restful. */
+  [data-theme='nord'] {
+    --color-background: #2E3440;
+    --color-surface: #3B4252;
+    --color-surface-elevated: #434C5E;
+    --color-surface-overlay: #4C566A;
+    --color-text-primary: #E3E7EC;
+    --color-text-secondary: #AEB6C4;
+    --color-border: #4C566A;
+    --color-border-hover: #818998;
+    --color-primary: #A5D0DC;
+    --color-primary-hover: #BBD8E2;
+    --color-secondary: #A3BE8C;
+    --color-secondary-hover: #B6CAA9;
+    --color-success: #A3BE8C;
+    --color-warning: #EBCB8B;
+    --color-error: #D08C93;
+    --color-backdrop: rgba(46, 52, 64, 0.8);
+  }
+
+  /* Claude — Warm near-black with terracotta. Paper-and-ink warmth. */
+  [data-theme='claude'] {
+    --color-background: #1F1E1D;
+    --color-surface: #262523;
+    --color-surface-elevated: #2E2C2A;
+    --color-surface-overlay: #363432;
+    --color-text-primary: #CBC9C4;
+    --color-text-secondary: #9A958F;
+    --color-border: #37342F;
+    --color-border-hover: #6B6863;
+    --color-primary: #D98E6E;
+    --color-primary-hover: #D4A38C;
+    --color-secondary: #8FAF96;
+    --color-secondary-hover: #A1B7A4;
+    --color-success: #8FAF96;
+    --color-warning: #D2A469;
+    --color-error: #CE8375;
+    --color-backdrop: rgba(31, 30, 29, 0.8);
+  }
+
+  /* ChatGPT — Neutral graphite with a muted brand green. */
+  [data-theme='chatgpt'] {
+    --color-background: #1E1E1E;
+    --color-surface: #252525;
+    --color-surface-elevated: #2C2C2C;
+    --color-surface-overlay: #333333;
+    --color-text-primary: #C9C9C9;
+    --color-text-secondary: #969696;
+    --color-border: #333A38;
+    --color-border-hover: #686C6B;
+    --color-primary: #4FB799;
+    --color-primary-hover: #7ABDAA;
+    --color-secondary: #5FBF9A;
+    --color-secondary-hover: #7FC2A8;
+    --color-success: #5FBF9A;
+    --color-warning: #D3A45C;
+    --color-error: #DB7C7C;
+    --color-backdrop: rgba(30, 30, 30, 0.8);
+  }
+
+  /* Atom — One Dark: blue-grey with a calm sky accent. */
+  [data-theme='atom'] {
+    --color-background: #1B1D21;
+    --color-surface: #22252A;
+    --color-surface-elevated: #282C34;
+    --color-surface-overlay: #2F343D;
+    --color-text-primary: #C1C9D0;
+    --color-text-secondary: #8B95A3;
+    --color-border: #2F343D;
+    --color-border-hover: #626870;
+    --color-primary: #79AADD;
+    --color-primary-hover: #92B5D8;
+    --color-secondary: #98C379;
+    --color-secondary-hover: #A4C593;
+    --color-success: #98C379;
+    --color-warning: #E5C07B;
+    --color-error: #E06C75;
+    --color-backdrop: rgba(27, 29, 33, 0.8);
+  }
+
+  /* Athena OS — Purple-black with soft violet. Security-distro drama, restrained. */
+  [data-theme='athena'] {
+    --color-background: #0F0D14;
+    --color-surface: #16131E;
+    --color-surface-elevated: #1D1928;
+    --color-surface-overlay: #251F31;
+    --color-text-primary: #BCB9C3;
+    --color-text-secondary: #8C8599;
+    --color-border: #2A2438;
+    --color-border-hover: #5D5869;
+    --color-primary: #A28CD2;
+    --color-primary-hover: #AB9CCD;
+    --color-secondary: #7BC49A;
+    --color-secondary-hover: #8EC1A6;
+    --color-success: #7BC49A;
+    --color-warning: #D4A85C;
+    --color-error: #D2687A;
+    --color-backdrop: rgba(15, 13, 20, 0.8);
+  }
+
+  /* Kali Linux — Near-black with Kali blue. Terminal heritage, modern calm. */
+  [data-theme='kali'] {
+    --color-background: #0A0E14;
+    --color-surface: #101720;
+    --color-surface-elevated: #16202B;
+    --color-surface-overlay: #1C2733;
+    --color-text-primary: #B4BBC3;
+    --color-text-secondary: #818B9B;
+    --color-border: #1E2A38;
+    --color-border-hover: #525D69;
+    --color-primary: #5A98FB;
+    --color-primary-hover: #7AA4E7;
+    --color-secondary: #6FCB8E;
+    --color-secondary-hover: #84C69E;
+    --color-success: #6FCB8E;
+    --color-warning: #D9B45E;
+    --color-error: #DB7A7A;
+    --color-backdrop: rgba(10, 14, 20, 0.8);
+  }
+
+  /* Light mode
+     ---------- */
+
+  /* Daylight — Light mode: soft paper white with ink text. Used when Dark Mode is off. */
+  [data-theme='daylight'] {
+    --color-background: #F6F7F9;
+    --color-surface: #FFFFFF;
+    --color-surface-elevated: #FFFFFF;
+    --color-surface-overlay: #EEF1F5;
+    --color-text-primary: #2E3136;
+    --color-text-secondary: #616B78;
+    --color-border: #DCE1E8;
+    --color-border-hover: #B0B5BC;
+    --color-primary: #3068C6;
+    --color-primary-hover: #2F589B;
+    --color-secondary: #1A7F37;
+    --color-secondary-hover: #206837;
+    --color-success: #1A7F37;
+    --color-warning: #8A6100;
+    --color-error: #B32D24;
+    --color-backdrop: rgba(31, 35, 40, 0.32);
+  }
+}
