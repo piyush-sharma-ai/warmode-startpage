@@ -1,6 +1,32 @@
 <div align="center">
 <h1>⚡ WARMODE STARTPAGE</h1>
-  
+
+
+
+<div align="center">
+</div>
+
+<div style="display: flex; overflow-x: auto; gap: 12px; scroll-snap-type: x mandatory; padding: 10px 0;">
+
+<img src="https://i.imgur.com/nXYef92.png" width="300" style="flex-shrink: 0; scroll-snap-align: start; border-radius: 8px;" />
+
+<img src="https://i.imgur.com/gKPJqb5.png" width="300" style="flex-shrink: 0; scroll-snap-align: start; border-radius: 8px;" />
+
+<img src="https://i.imgur.com/yLX3Dll.png" width="300" style="flex-shrink: 0; scroll-snap-align: start; border-radius: 8px;" />
+
+<img src="https://i.imgur.com/bF0i7Mf.png" width="300" style="flex-shrink: 0; scroll-snap-align: start; border-radius: 8px;" />
+
+<img src="https://i.imgur.com/AJe8QS2.png" width="300" style="flex-shrink: 0; scroll-snap-align: start; border-radius: 8px;" />
+
+<img src="https://i.imgur.com/2uxBjVj.png" width="300" style="flex-shrink: 0; scroll-snap-align: start; border-radius: 8px;" />
+
+<img src="https://i.imgur.com/29NNr9w.png" width="300" style="flex-shrink: 0; scroll-snap-align: start; border-radius: 8px;" />
+
+<img src="https://i.imgur.com/Mnf82xZ.png" width="300" style="flex-shrink: 0; scroll-snap-align: start; border-radius: 8px;" />
+
+</div>
+
+
 <p><b>Where Peak Calmness Meets God-Level OffSec Productivity.</b></p>
 <p><i>A distraction-free, aesthetic, offline-first browser command center engineered for developers, security researchers, and deep-focus work.</i></p>
 <p>
