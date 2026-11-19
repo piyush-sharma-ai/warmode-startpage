@@ -6,7 +6,7 @@ import { store } from './storage.js';
 import { showToast, dayKey } from './core.js';
 import { exportAllData, triggerImportData, importAllData } from './backup.js';
 
-const SCRATCHPAD_KEY = 'traichu_scratchpad';
+const SCRATCHPAD_KEY = 'warmode_scratchpad';
 
 export function initScratchpad() {
   const sp = document.getElementById('scratchpad');
@@ -24,6 +24,9 @@ export function initScratchpad() {
   if (fileInput) {
     fileInput.value = '';
   }
+
+  const scrim = document.getElementById('sp-scrim');
+  if (scrim) scrim.addEventListener('click', () => closeScratchpad());
 }
 
 function updateScratchpadStats() {
@@ -35,20 +38,54 @@ function updateScratchpadStats() {
   st.textContent = `${words}w · ${sp.value.length}c`;
 }
 
-export function toggleScratchpad() {
+export function openScratchpad() {
   const wrap = document.getElementById('scratchpad-wrap');
   if (!wrap) return;
-  const willShow = !wrap.classList.contains('show');
-  wrap.classList.toggle('show', willShow);
 
-  if (willShow) {
-    updateScratchpadStats();
-    const sp = document.getElementById('scratchpad');
-    if (sp) sp.focus();
-  } else {
-    const q = document.getElementById('q');
-    if (q) q.focus();
-  }
+  // The drawer is a .zen-target, so Zen Mode keeps it display:none. Honour the
+  // user's Zen state but lift the drawer out of it while it is open.
+  if (document.body.classList.contains('zen-active')) wrap.classList.remove('zen-hidden');
+
+  wrap.classList.add('show');
+  const scrim = document.getElementById('sp-scrim');
+  if (scrim) scrim.classList.add('show');
+
+  updateScratchpadStats();
+  renderPomoChart();
+
+  const sp = document.getElementById('scratchpad');
+  // preventScroll: never yank the page when the pad opens.
+  if (sp) sp.focus({ preventScroll: true });
+}
+
+export function closeScratchpad(restoreFocus = true) {
+  const wrap = document.getElementById('scratchpad-wrap');
+  if (!wrap) return;
+  const wasOpen = wrap.classList.contains('show');
+
+  wrap.classList.remove('show');
+  const scrim = document.getElementById('sp-scrim');
+  if (scrim) scrim.classList.remove('show');
+
+  // Put it back under Zen Mode if that is still the active state.
+  if (document.body.classList.contains('zen-active')) wrap.classList.add('zen-hidden');
+
+  if (!wasOpen || !restoreFocus) return;
+
+  // Hand focus back to the omni-bar so ⌥S / Esc flows keep working.
+  const q = document.getElementById('q');
+  if (q) q.focus({ preventScroll: true });
+}
+
+export function toggleScratchpad() {
+  const wrap = document.getElementById('scratchpad-wrap');
+  if (wrap && wrap.classList.contains('show')) closeScratchpad();
+  else openScratchpad();
+}
+
+export function isScratchpadOpen() {
+  const wrap = document.getElementById('scratchpad-wrap');
+  return !!wrap && wrap.classList.contains('show');
 }
 
 export function downloadScratchpad() {
@@ -77,7 +114,7 @@ export function renderPomoChart() {
   let maxVal = 4;
   for (let i = 6; i >= 0; i--) {
     const d = new Date(Date.now() - i * 864e5);
-    const count = +localStorage.getItem('traichu_pomo_' + dayKey(d)) || 0;
+    const count = +localStorage.getItem('warmode_pomo_' + dayKey(d)) || 0;
     if (count > maxVal) maxVal = count;
     const lbl = d.toLocaleDateString('en-US', { weekday: 'narrow' });
     days.push({ lbl, count });

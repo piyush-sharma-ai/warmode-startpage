@@ -16,8 +16,8 @@ import { initSearch, handleSearch } from './modules/search.js';
 import { initTimer, startCustomPomodoro, togglePomodoro, resetStatus } from './modules/timer.js';
 import { initAudio, cycleAudio } from './modules/audio.js';
 import {
-  initScratchpad, toggleScratchpad, downloadScratchpad,
-  exportAllData, triggerImportData, importAllData, renderPomoChart,
+  initScratchpad, toggleScratchpad, openScratchpad, closeScratchpad,
+  downloadScratchpad, exportAllData, triggerImportData, importAllData, renderPomoChart,
 } from './modules/scratchpad.js';
 import { initTheme, cycleTheme, toggleDarkMode, THEMES, getThemeIndex, getActiveTheme } from './modules/theme.js';
 import { initHero, saveHeroText } from './modules/hero.js';
@@ -52,7 +52,7 @@ const GLOBAL_HANDLERS = {
   // Timer
   startCustomPomodoro, togglePomodoro, resetStatus,
   // Audio / scratchpad / theme
-  cycleAudio, toggleScratchpad, downloadScratchpad,
+  cycleAudio, toggleScratchpad, openScratchpad, closeScratchpad, downloadScratchpad,
   exportAllData, triggerImportData, importAllData,
   cycleTheme,
   // Hero / edit / zen / breathing

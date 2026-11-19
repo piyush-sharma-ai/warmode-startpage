@@ -244,25 +244,25 @@ function throttle(fn, limit) {
 
 
 const STORAGE_KEYS = {
-  DOCK: 'traichu_dock',
-  BOOKMARKS: 'traichu_bookmarks',
-  GMAILS: 'traichu_gmails',
-  CHEATS: 'traichu_cheats',
-  QUICK_TOOLS: 'traichu_quick_tools',
-  TODOS: 'traichu_todos',
-  HABITS: 'traichu_habits',
-  SNIPPETS: 'traichu_snippets',
-  THEME: 'traichu_theme',
-  HERO_GREET: 'traichu_hero_greet',
-  HERO_SUB: 'traichu_hero_sub',
-  PROMPT_USER: 'traichu_prompt_user',
-  PROMPT_PATH: 'traichu_prompt_path',
-  PROMPT_HASH: 'traichu_prompt_hash',
-  SCRATCHPAD: 'traichu_scratchpad',
-  FOCUS: 'traichu_focus',
-  HABIT_DATE: 'traichu_habit_date',
-  STREAK: 'traichu_streak',
-  AUDIO_MODE: 'traichu_audio_mode',
+  DOCK: 'warmode_dock',
+  BOOKMARKS: 'warmode_bookmarks',
+  GMAILS: 'warmode_gmails',
+  CHEATS: 'warmode_cheats',
+  QUICK_TOOLS: 'warmode_quick_tools',
+  TODOS: 'warmode_todos',
+  HABITS: 'warmode_habits',
+  SNIPPETS: 'warmode_snippets',
+  THEME: 'warmode_theme',
+  HERO_GREET: 'warmode_hero_greet',
+  HERO_SUB: 'warmode_hero_sub',
+  PROMPT_USER: 'warmode_prompt_user',
+  PROMPT_PATH: 'warmode_prompt_path',
+  PROMPT_HASH: 'warmode_prompt_hash',
+  SCRATCHPAD: 'warmode_scratchpad',
+  FOCUS: 'warmode_focus',
+  HABIT_DATE: 'warmode_habit_date',
+  STREAK: 'warmode_streak',
+  AUDIO_MODE: 'warmode_audio_mode',
 };
 
 const DEFAULTS = {
@@ -390,7 +390,7 @@ class Store {
 
   importAll(data) {
     Object.entries(data).forEach(([storageKey, value]) => {
-      if (storageKey.startsWith('traichu_')) {
+      if (storageKey.startsWith('warmode_')) {
         localStorage.setItem(storageKey, value);
       }
     });
@@ -522,7 +522,7 @@ function closeShortcutsModal() {
  * Zen Mode Module - Hide/show panels for distraction-free focus
  */
 
-const ZEN_KEY = 'traichu_zen';
+const ZEN_KEY = 'warmode_zen';
 
 function isZenActive() {
   return document.body.classList.contains('zen-active');
@@ -674,23 +674,23 @@ function initHero() {
 }
 
 function loadHeroText() {
-  setText('greeting', localStorage.getItem('traichu_hero_greet') || DEFAULTS.greet);
-  setText('subline-text', localStorage.getItem('traichu_hero_sub') || DEFAULTS.sub);
-  setText('prompt-user', localStorage.getItem('traichu_prompt_user') || DEFAULTS.user);
-  setText('prompt-path', localStorage.getItem('traichu_prompt_path') || DEFAULTS.path);
-  setText('prompt-hash', localStorage.getItem('traichu_prompt_hash') || DEFAULTS.hash);
+  setText('greeting', localStorage.getItem('warmode_hero_greet') || DEFAULTS.greet);
+  setText('subline-text', localStorage.getItem('warmode_hero_sub') || DEFAULTS.sub);
+  setText('prompt-user', localStorage.getItem('warmode_prompt_user') || DEFAULTS.user);
+  setText('prompt-path', localStorage.getItem('warmode_prompt_path') || DEFAULTS.path);
+  setText('prompt-hash', localStorage.getItem('warmode_prompt_hash') || DEFAULTS.hash);
 }
 
 function saveHeroText() {
-  localStorage.setItem('traichu_hero_greet', getText('greeting', DEFAULTS.greet));
-  localStorage.setItem('traichu_hero_sub', getText('subline-text', DEFAULTS.sub));
-  localStorage.setItem('traichu_prompt_user', getText('prompt-user', DEFAULTS.user));
-  localStorage.setItem('traichu_prompt_path', getText('prompt-path', DEFAULTS.path));
-  localStorage.setItem('traichu_prompt_hash', getText('prompt-hash', DEFAULTS.hash));
+  localStorage.setItem('warmode_hero_greet', getText('greeting', DEFAULTS.greet));
+  localStorage.setItem('warmode_hero_sub', getText('subline-text', DEFAULTS.sub));
+  localStorage.setItem('warmode_prompt_user', getText('prompt-user', DEFAULTS.user));
+  localStorage.setItem('warmode_prompt_path', getText('prompt-path', DEFAULTS.path));
+  localStorage.setItem('warmode_prompt_hash', getText('prompt-hash', DEFAULTS.hash));
 
   // Keep the on-screen text in sync with what was actually persisted.
-  setText('greeting', localStorage.getItem('traichu_hero_greet'));
-  setText('subline-text', localStorage.getItem('traichu_hero_sub'));
+  setText('greeting', localStorage.getItem('warmode_hero_greet'));
+  setText('subline-text', localStorage.getItem('warmode_hero_sub'));
 }
     exports["initHero"] = initHero;
     exports["saveHeroText"] = saveHeroText;
@@ -761,7 +761,7 @@ function renderFocus() {
 
 
 
-const STORAGE_KEY = 'traichu_audio_mode';
+const STORAGE_KEY = 'warmode_audio_mode';
 const AUDIO_MODES = ['Off', 'Brown Noise', 'Pink Rain', '40Hz Gamma'];
 
 let audioCtx = null;
@@ -928,10 +928,10 @@ function getAudioModeIndex() {
  *
  * Architecture:
  *   - `DARK_THEMES` is an ordered list of premium dark palettes. The numeric
- *     index persisted in `traichu_theme` is the position in this list.
+ *     index persisted in `warmode_theme` is the position in this list.
  *   - `LIGHT_THEME` is applied when Dark Mode is switched off. It is NOT part
  *     of the cycle: cycling always lands back on a dark palette.
- *   - `traichu_theme_id` stores the resolved theme id so the inline pre-paint
+ *   - `warmode_theme_id` stores the resolved theme id so the inline pre-paint
  *     bootstrap in index.html can apply the palette before first paint
  *     (prevents a flash of the default theme).
  *   - All color values live in css/themes.css; this module only owns ids,
@@ -965,9 +965,9 @@ const DARK_THEMES = [
 /** Applied when Dark Mode is off. Deliberately excluded from the cycle. */
 const LIGHT_THEME = { name: 'Daylight', id: 'daylight' };
 
-const THEME_INDEX_KEY = 'traichu_theme';
-const THEME_ID_KEY = 'traichu_theme_id';
-const DARK_MODE_KEY = 'traichu_dark';
+const THEME_INDEX_KEY = 'warmode_theme';
+const THEME_ID_KEY = 'warmode_theme_id';
+const DARK_MODE_KEY = 'warmode_dark';
 
 /** All selectable themes, exposed for UIs that list them. */
 const THEMES = [...DARK_THEMES, LIGHT_THEME];
@@ -1117,7 +1117,7 @@ function importAllData(e) {
       if (!data || typeof data !== 'object' || Array.isArray(data)) {
         throw new Error('not an object');
       }
-      const known = Object.keys(data).filter(k => k.startsWith('traichu_'));
+      const known = Object.keys(data).filter(k => k.startsWith('warmode_'));
       if (known.length === 0) {
         showToast('Invalid Backup JSON');
         return;
@@ -1157,7 +1157,7 @@ function importAllData(e) {
 
 
 
-const SCRATCHPAD_KEY = 'traichu_scratchpad';
+const SCRATCHPAD_KEY = 'warmode_scratchpad';
 
 function initScratchpad() {
   const sp = document.getElementById('scratchpad');
@@ -1175,6 +1175,9 @@ function initScratchpad() {
   if (fileInput) {
     fileInput.value = '';
   }
+
+  const scrim = document.getElementById('sp-scrim');
+  if (scrim) scrim.addEventListener('click', () => closeScratchpad());
 }
 
 function updateScratchpadStats() {
@@ -1186,20 +1189,54 @@ function updateScratchpadStats() {
   st.textContent = `${words}w · ${sp.value.length}c`;
 }
 
-function toggleScratchpad() {
+function openScratchpad() {
   const wrap = document.getElementById('scratchpad-wrap');
   if (!wrap) return;
-  const willShow = !wrap.classList.contains('show');
-  wrap.classList.toggle('show', willShow);
 
-  if (willShow) {
-    updateScratchpadStats();
-    const sp = document.getElementById('scratchpad');
-    if (sp) sp.focus();
-  } else {
-    const q = document.getElementById('q');
-    if (q) q.focus();
-  }
+  // The drawer is a .zen-target, so Zen Mode keeps it display:none. Honour the
+  // user's Zen state but lift the drawer out of it while it is open.
+  if (document.body.classList.contains('zen-active')) wrap.classList.remove('zen-hidden');
+
+  wrap.classList.add('show');
+  const scrim = document.getElementById('sp-scrim');
+  if (scrim) scrim.classList.add('show');
+
+  updateScratchpadStats();
+  renderPomoChart();
+
+  const sp = document.getElementById('scratchpad');
+  // preventScroll: never yank the page when the pad opens.
+  if (sp) sp.focus({ preventScroll: true });
+}
+
+function closeScratchpad(restoreFocus = true) {
+  const wrap = document.getElementById('scratchpad-wrap');
+  if (!wrap) return;
+  const wasOpen = wrap.classList.contains('show');
+
+  wrap.classList.remove('show');
+  const scrim = document.getElementById('sp-scrim');
+  if (scrim) scrim.classList.remove('show');
+
+  // Put it back under Zen Mode if that is still the active state.
+  if (document.body.classList.contains('zen-active')) wrap.classList.add('zen-hidden');
+
+  if (!wasOpen || !restoreFocus) return;
+
+  // Hand focus back to the omni-bar so ⌥S / Esc flows keep working.
+  const q = document.getElementById('q');
+  if (q) q.focus({ preventScroll: true });
+}
+
+function toggleScratchpad() {
+  const wrap = document.getElementById('scratchpad-wrap');
+  if (wrap && wrap.classList.contains('show')) closeScratchpad();
+  else openScratchpad();
+}
+
+function isScratchpadOpen() {
+  const wrap = document.getElementById('scratchpad-wrap');
+  return !!wrap && wrap.classList.contains('show');
 }
 
 function downloadScratchpad() {
@@ -1228,7 +1265,7 @@ function renderPomoChart() {
   let maxVal = 4;
   for (let i = 6; i >= 0; i--) {
     const d = new Date(Date.now() - i * 864e5);
-    const count = +localStorage.getItem('traichu_pomo_' + dayKey(d)) || 0;
+    const count = +localStorage.getItem('warmode_pomo_' + dayKey(d)) || 0;
     if (count > maxVal) maxVal = count;
     const lbl = d.toLocaleDateString('en-US', { weekday: 'narrow' });
     days.push({ lbl, count });
@@ -1250,7 +1287,10 @@ function renderPomoChart() {
 
 // Backup / restore (implemented in backup.js to keep localStorage concerns isolated)
     exports["initScratchpad"] = initScratchpad;
+    exports["openScratchpad"] = openScratchpad;
+    exports["closeScratchpad"] = closeScratchpad;
     exports["toggleScratchpad"] = toggleScratchpad;
+    exports["isScratchpadOpen"] = isScratchpadOpen;
     exports["downloadScratchpad"] = downloadScratchpad;
     exports["renderPomoChart"] = renderPomoChart;
     exports["exportAllData"] = exportAllData;
@@ -1413,29 +1453,29 @@ function clearDoneTodos() {
 /* ========== HABITS ========== */
 function checkDailyHabitReset() {
   const today = dayKey(new Date());
-  const lastDate = localStorage.getItem('traichu_habit_date');
+  const lastDate = localStorage.getItem('warmode_habit_date');
   const habits = store.get('HABITS') || [];
 
   if (lastDate && lastDate !== today) {
     const allCompletedYesterday = habits.length > 0 && habits.every(h => h.done);
-    let streak = +localStorage.getItem('traichu_streak') || 0;
+    let streak = +localStorage.getItem('warmode_streak') || 0;
     const yesterday = dayKey(new Date(Date.now() - 864e5));
     if (lastDate === yesterday && allCompletedYesterday) {
       streak += 1;
     } else if (lastDate !== yesterday) {
       streak = 0;
     }
-    localStorage.setItem('traichu_streak', String(streak));
+    localStorage.setItem('warmode_streak', String(streak));
     habits.forEach(h => { h.done = false; });
     store.set('HABITS', habits);
   }
-  localStorage.setItem('traichu_habit_date', today);
+  localStorage.setItem('warmode_habit_date', today);
 }
 
 function updateStreakBadge() {
   const badge = document.getElementById('streak-badge');
   if (!badge) return;
-  const streak = +localStorage.getItem('traichu_streak') || 0;
+  const streak = +localStorage.getItem('warmode_streak') || 0;
   const habits = store.get('HABITS') || [];
   const allDoneToday = habits.length > 0 && habits.every(h => h.done);
   const effective = streak + (allDoneToday ? 1 : 0);
@@ -2708,11 +2748,11 @@ function resetStatus() {
 }
 
 function getPomoCount(dateObj = new Date()) {
-  return +localStorage.getItem('traichu_pomo_' + dayKey(dateObj)) || 0;
+  return +localStorage.getItem('warmode_pomo_' + dayKey(dateObj)) || 0;
 }
 
 function bumpPomo() {
-  localStorage.setItem('traichu_pomo_' + dayKey(new Date()), getPomoCount() + 1);
+  localStorage.setItem('warmode_pomo_' + dayKey(new Date()), getPomoCount() + 1);
 }
 
 function startCustomPomodoro(minutes = 25, label = "POMODORO") {
@@ -3436,6 +3476,7 @@ function toggleEditMode() {
     var closeGmailModal = gmail.closeGmailModal;
     var scratchpad = __req("scratchpad");
     var toggleScratchpad = scratchpad.toggleScratchpad;
+    var closeScratchpad = scratchpad.closeScratchpad;
     var audio = __req("audio");
     var cycleAudio = audio.cycleAudio;
     var breathing = __req("breathing");
@@ -3527,8 +3568,7 @@ function handleKeydown(e) {
     closeGmailModal();
     closeToolModal();
     closeShortcutsModal();
-    const sp = document.getElementById('scratchpad-wrap');
-    if (sp) sp.classList.remove('show');
+    closeScratchpad();
   }
 
   const active = document.activeElement;
@@ -3626,6 +3666,8 @@ function handleClick(e) {
     var scratchpad = __req("scratchpad");
     var initScratchpad = scratchpad.initScratchpad;
     var toggleScratchpad = scratchpad.toggleScratchpad;
+    var openScratchpad = scratchpad.openScratchpad;
+    var closeScratchpad = scratchpad.closeScratchpad;
     var downloadScratchpad = scratchpad.downloadScratchpad;
     var exportAllData = scratchpad.exportAllData;
     var triggerImportData = scratchpad.triggerImportData;
@@ -3713,7 +3755,7 @@ const GLOBAL_HANDLERS = {
   // Timer
   startCustomPomodoro, togglePomodoro, resetStatus,
   // Audio / scratchpad / theme
-  cycleAudio, toggleScratchpad, downloadScratchpad,
+  cycleAudio, toggleScratchpad, openScratchpad, closeScratchpad, downloadScratchpad,
   exportAllData, triggerImportData, importAllData,
   cycleTheme,
   // Hero / edit / zen / breathing

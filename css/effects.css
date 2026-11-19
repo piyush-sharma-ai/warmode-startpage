@@ -89,6 +89,45 @@
     box-shadow: none;
   }
 
+  /* The drawer floats above the page, so it keeps one soft, wide shadow —
+     low opacity and a long falloff, never the hard black slab it had before.
+     Declared on the closed state too (it is off-canvas there) so the shadow
+     never pops in mid-animation. */
+  #scratchpad-wrap {
+    box-shadow:
+      -24px 0 60px -22px rgba(1, 4, 9, 0.55),
+      -2px 0 14px -8px rgba(1, 4, 9, 0.35);
+  }
+
+  /* Scrim: a gentle directional dim behind the drawer. It fades in with the
+     panel and closes it on click, so the interaction stays one-handed. */
+  .sp-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--z-index-fixed) - 1);
+    background: radial-gradient(120% 120% at 100% 50%, rgba(1, 4, 9, 0) 34%, rgba(1, 4, 9, 0.34) 100%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 400ms ease,
+      visibility 0s linear 400ms;
+  }
+
+  .sp-scrim.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity 460ms ease,
+      visibility 0s;
+  }
+
+  /* Daylight needs a lighter dim so the scrim reads as shade, not night. */
+  .light-mode .sp-scrim {
+    background: radial-gradient(120% 120% at 100% 50%, rgba(27, 31, 36, 0) 34%, rgba(27, 31, 36, 0.2) 100%);
+  }
+
   ::selection {
     background-color: color-mix(in srgb, var(--color-primary) 32%, transparent);
     color: var(--color-text-primary);

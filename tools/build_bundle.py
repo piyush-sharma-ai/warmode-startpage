@@ -170,8 +170,8 @@ def check_theme_consistency():
     # index.html must apply the saved palette before paint, and the default
     # markup theme must be one of the registered ids.
     html = open(INDEX_HTML, encoding="utf-8").read()
-    if "traichu_theme_id" not in html:
-        problems.append("index.html: missing pre-paint theme bootstrap (traichu_theme_id)")
+    if "warmode_theme_id" not in html:
+        problems.append("index.html: missing pre-paint theme bootstrap (warmode_theme_id)")
     m = re.search(r"<html[^>]*data-theme='([^']+)'", html) or re.search(r'<html[^>]*data-theme="([^"]+)"', html)
     if m and m.group(1) not in js_ids:
         problems.append(f"index.html: default data-theme='{m.group(1)}' is not a registered theme")

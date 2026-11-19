@@ -5,7 +5,7 @@
 import { toggleZenMode } from './zen.js';
 import { togglePomodoro } from './timer.js';
 import { toggleGmailMenu, closeGmailMenu, closeGmailModal } from './gmail.js';
-import { toggleScratchpad } from './scratchpad.js';
+import { toggleScratchpad, closeScratchpad } from './scratchpad.js';
 import { cycleAudio } from './audio.js';
 import { toggleBreathing } from './breathing.js';
 import { cycleTheme, toggleDarkMode } from './theme.js';
@@ -67,8 +67,7 @@ function handleKeydown(e) {
     closeGmailModal();
     closeToolModal();
     closeShortcutsModal();
-    const sp = document.getElementById('scratchpad-wrap');
-    if (sp) sp.classList.remove('show');
+    closeScratchpad();
   }
 
   const active = document.activeElement;

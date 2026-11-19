@@ -1829,25 +1829,60 @@
   /* =========================================================
      SCRATCHPAD & TELEMETRY DRAWER
      ========================================================= */
+  /* Closed state is the base style: the drawer is parked just past the right
+     edge, faded out and taken out of the tab order. Opening only flips
+     .show, so the browser interpolates between two transform-only states
+     (no layout animation on `right`, which is what made it feel jumpy). */
   #scratchpad-wrap {
     position: fixed;
     top: 50%;
-    right: -440px;
-    transform: translateY(-50%);
+    right: 0;
     width: min(390px, 92vw);
     height: 70vh;
     border-radius: var(--radius-lg) 0 0 var(--radius-lg);
     padding: var(--spacing-4);
-    border-left: 3px solid var(--color-primary);
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(27, 31, 36, 0.04), 0 8px 24px rgba(1, 4, 9, 0.48);
+    border-left: 2px solid var(--color-primary);
     z-index: var(--z-index-fixed);
-    transition: right var(--transition-slow) ease;
     display: flex;
     flex-direction: column;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate3d(calc(100% + 48px), -50%, 0) scale(0.985);
+    transform-origin: 100% 50%;
+    transition:
+      transform 340ms cubic-bezier(0.4, 0, 0.72, 0.2),
+      opacity 240ms ease,
+      visibility 0s linear 340ms;
   }
 
+  /* Opening: longer, softer settle (ease-out-quint-ish) so the panel glides in
+     and decelerates gently instead of snapping into place. */
   #scratchpad-wrap.show {
-    right: 0;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translate3d(0, -50%, 0) scale(1);
+    transition:
+      transform 520ms cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 380ms ease 40ms,
+      visibility 0s;
+  }
+
+  /* Content arrives a beat after the panel, in a slow top-to-bottom cascade.
+     One-shot animations (not transitions) so the text is never faded out, and
+     a transform-only rise so a skipped animation is harmless. */
+  #scratchpad-wrap.show > .sp-top-bar {
+    animation: spRise 420ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+  }
+
+  #scratchpad-wrap.show > #scratchpad {
+    animation: spRise 460ms cubic-bezier(0.16, 1, 0.3, 1) 130ms both;
+  }
+
+  #scratchpad-wrap.show > .sp-footer {
+    animation: spRise 460ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
   }
 
   .sp-top-bar {

@@ -40,6 +40,14 @@
   to { opacity: 1; transform: translateX(0); }
 }
 
+/* Scratchpad drawer contents: a short, soft rise as the panel settles.
+   Transform-only on purpose — content is never faded, so it stays readable
+   even if the animation is skipped or interrupted. */
+@keyframes spRise {
+  from { transform: translateY(7px); }
+  to { transform: translateY(0); }
+}
+
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

@@ -67,11 +67,11 @@ export function resetStatus() {
 }
 
 function getPomoCount(dateObj = new Date()) {
-  return +localStorage.getItem('traichu_pomo_' + dayKey(dateObj)) || 0;
+  return +localStorage.getItem('warmode_pomo_' + dayKey(dateObj)) || 0;
 }
 
 function bumpPomo() {
-  localStorage.setItem('traichu_pomo_' + dayKey(new Date()), getPomoCount() + 1);
+  localStorage.setItem('warmode_pomo_' + dayKey(new Date()), getPomoCount() + 1);
 }
 
 export function startCustomPomodoro(minutes = 25, label = "POMODORO") {

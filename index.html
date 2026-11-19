@@ -10,8 +10,8 @@
     <script>
         (function () {
             try {
-                var dark = localStorage.getItem('traichu_dark');
-                var id = dark === '0' ? 'daylight' : localStorage.getItem('traichu_theme_id');
+                var dark = localStorage.getItem('warmode_dark');
+                var id = dark === '0' ? 'daylight' : localStorage.getItem('warmode_theme_id');
                 if (!id && dark === '0') id = 'daylight';
                 if (id) {
                     document.documentElement.setAttribute('data-theme', id);
@@ -214,11 +214,11 @@
       (function () {
         try {
           var seeds = {
-            traichu_hero_greet: 'Welcome Intruder',
-            traichu_hero_sub: 'Just Stay Fucking Hard MF !!!.\nI am Just Not You !!!\n"I dont Stop when I am tired,\nI only stop when I am done"',
-            traichu_prompt_user: 'root💀kali',
-            traichu_prompt_path: '~',
-            traichu_prompt_hash: '#'
+            warmode_hero_greet: 'Welcome Intruder',
+            warmode_hero_sub: 'Just Stay Fucking Hard MF !!!.\nI am Just Not You !!!\n"I dont Stop when I am tired,\nI only stop when I am done"',
+            warmode_prompt_user: 'root💀kali',
+            warmode_prompt_path: '~',
+            warmode_prompt_hash: '#'
           };
           for (var k in seeds) {
             if (Object.prototype.hasOwnProperty.call(seeds, k) && !localStorage.getItem(k)) {
@@ -397,8 +397,11 @@ I only stop when I am done"</span>
         </section>
     </main>
 
+    <!-- Soft scrim behind the brain-dump drawer; click it to close. -->
+    <div id="sp-scrim" class="sp-scrim"></div>
+
     <!-- Subconscious Scratchpad & Telemetry Drawer -->
-    <section id="scratchpad-wrap" class="zen-target">
+    <section id="scratchpad-wrap" class="zen-target" aria-label="Brain dump scratchpad">
         <div class="sp-top-bar">
             <div class="widget-header" style="color: var(--color-primary); margin: 0;">&gt; BRAIN_DUMP.md</div>
             <div class="sp-actions">

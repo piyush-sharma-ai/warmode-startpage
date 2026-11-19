@@ -3,10 +3,10 @@
  *
  * Architecture:
  *   - `DARK_THEMES` is an ordered list of premium dark palettes. The numeric
- *     index persisted in `traichu_theme` is the position in this list.
+ *     index persisted in `warmode_theme` is the position in this list.
  *   - `LIGHT_THEME` is applied when Dark Mode is switched off. It is NOT part
  *     of the cycle: cycling always lands back on a dark palette.
- *   - `traichu_theme_id` stores the resolved theme id so the inline pre-paint
+ *   - `warmode_theme_id` stores the resolved theme id so the inline pre-paint
  *     bootstrap in index.html can apply the palette before first paint
  *     (prevents a flash of the default theme).
  *   - All color values live in css/themes.css; this module only owns ids,
@@ -40,9 +40,9 @@ export const DARK_THEMES = [
 /** Applied when Dark Mode is off. Deliberately excluded from the cycle. */
 export const LIGHT_THEME = { name: 'Daylight', id: 'daylight' };
 
-const THEME_INDEX_KEY = 'traichu_theme';
-const THEME_ID_KEY = 'traichu_theme_id';
-const DARK_MODE_KEY = 'traichu_dark';
+const THEME_INDEX_KEY = 'warmode_theme';
+const THEME_ID_KEY = 'warmode_theme_id';
+const DARK_MODE_KEY = 'warmode_dark';
 
 /** All selectable themes, exposed for UIs that list them. */
 export const THEMES = [...DARK_THEMES, LIGHT_THEME];

@@ -5,25 +5,25 @@
 import { safeLoadJSON, safeSaveJSON } from './core.js';
 
 const STORAGE_KEYS = {
-  DOCK: 'traichu_dock',
-  BOOKMARKS: 'traichu_bookmarks',
-  GMAILS: 'traichu_gmails',
-  CHEATS: 'traichu_cheats',
-  QUICK_TOOLS: 'traichu_quick_tools',
-  TODOS: 'traichu_todos',
-  HABITS: 'traichu_habits',
-  SNIPPETS: 'traichu_snippets',
-  THEME: 'traichu_theme',
-  HERO_GREET: 'traichu_hero_greet',
-  HERO_SUB: 'traichu_hero_sub',
-  PROMPT_USER: 'traichu_prompt_user',
-  PROMPT_PATH: 'traichu_prompt_path',
-  PROMPT_HASH: 'traichu_prompt_hash',
-  SCRATCHPAD: 'traichu_scratchpad',
-  FOCUS: 'traichu_focus',
-  HABIT_DATE: 'traichu_habit_date',
-  STREAK: 'traichu_streak',
-  AUDIO_MODE: 'traichu_audio_mode',
+  DOCK: 'warmode_dock',
+  BOOKMARKS: 'warmode_bookmarks',
+  GMAILS: 'warmode_gmails',
+  CHEATS: 'warmode_cheats',
+  QUICK_TOOLS: 'warmode_quick_tools',
+  TODOS: 'warmode_todos',
+  HABITS: 'warmode_habits',
+  SNIPPETS: 'warmode_snippets',
+  THEME: 'warmode_theme',
+  HERO_GREET: 'warmode_hero_greet',
+  HERO_SUB: 'warmode_hero_sub',
+  PROMPT_USER: 'warmode_prompt_user',
+  PROMPT_PATH: 'warmode_prompt_path',
+  PROMPT_HASH: 'warmode_prompt_hash',
+  SCRATCHPAD: 'warmode_scratchpad',
+  FOCUS: 'warmode_focus',
+  HABIT_DATE: 'warmode_habit_date',
+  STREAK: 'warmode_streak',
+  AUDIO_MODE: 'warmode_audio_mode',
 };
 
 const DEFAULTS = {
@@ -151,7 +151,7 @@ class Store {
 
   importAll(data) {
     Object.entries(data).forEach(([storageKey, value]) => {
-      if (storageKey.startsWith('traichu_')) {
+      if (storageKey.startsWith('warmode_')) {
         localStorage.setItem(storageKey, value);
       }
     });

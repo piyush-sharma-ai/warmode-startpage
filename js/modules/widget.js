@@ -143,29 +143,29 @@ export function clearDoneTodos() {
 /* ========== HABITS ========== */
 export function checkDailyHabitReset() {
   const today = dayKey(new Date());
-  const lastDate = localStorage.getItem('traichu_habit_date');
+  const lastDate = localStorage.getItem('warmode_habit_date');
   const habits = store.get('HABITS') || [];
 
   if (lastDate && lastDate !== today) {
     const allCompletedYesterday = habits.length > 0 && habits.every(h => h.done);
-    let streak = +localStorage.getItem('traichu_streak') || 0;
+    let streak = +localStorage.getItem('warmode_streak') || 0;
     const yesterday = dayKey(new Date(Date.now() - 864e5));
     if (lastDate === yesterday && allCompletedYesterday) {
       streak += 1;
     } else if (lastDate !== yesterday) {
       streak = 0;
     }
-    localStorage.setItem('traichu_streak', String(streak));
+    localStorage.setItem('warmode_streak', String(streak));
     habits.forEach(h => { h.done = false; });
     store.set('HABITS', habits);
   }
-  localStorage.setItem('traichu_habit_date', today);
+  localStorage.setItem('warmode_habit_date', today);
 }
 
 export function updateStreakBadge() {
   const badge = document.getElementById('streak-badge');
   if (!badge) return;
-  const streak = +localStorage.getItem('traichu_streak') || 0;
+  const streak = +localStorage.getItem('warmode_streak') || 0;
   const habits = store.get('HABITS') || [];
   const allDoneToday = habits.length > 0 && habits.every(h => h.done);
   const effective = streak + (allDoneToday ? 1 : 0);

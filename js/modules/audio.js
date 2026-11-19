@@ -8,7 +8,7 @@
 
 import { showToast } from './core.js';
 
-const STORAGE_KEY = 'traichu_audio_mode';
+const STORAGE_KEY = 'warmode_audio_mode';
 const AUDIO_MODES = ['Off', 'Brown Noise', 'Pink Rain', '40Hz Gamma'];
 
 let audioCtx = null;

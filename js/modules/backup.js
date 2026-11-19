@@ -36,7 +36,7 @@ export function importAllData(e) {
       if (!data || typeof data !== 'object' || Array.isArray(data)) {
         throw new Error('not an object');
       }
-      const known = Object.keys(data).filter(k => k.startsWith('traichu_'));
+      const known = Object.keys(data).filter(k => k.startsWith('warmode_'));
       if (known.length === 0) {
         showToast('Invalid Backup JSON');
         return;

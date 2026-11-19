@@ -2,7 +2,7 @@
  * Zen Mode Module - Hide/show panels for distraction-free focus
  */
 
-const ZEN_KEY = 'traichu_zen';
+const ZEN_KEY = 'warmode_zen';
 
 function isZenActive() {
   return document.body.classList.contains('zen-active');
