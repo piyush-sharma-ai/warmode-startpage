@@ -147,12 +147,4 @@ function updateAudioBadge() {
   badge.setAttribute('aria-pressed', String(audioModeIndex !== 0));
 }
 
-export function stopAudio() {
-  stopFocusAudio();
-}
-
-export function getAudioModeIndex() {
-  return audioModeIndex;
-}
-
 export { AUDIO_MODES };

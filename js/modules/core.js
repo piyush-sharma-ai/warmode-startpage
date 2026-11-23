@@ -35,6 +35,11 @@ export function safeLoadJSON(key, fallback) {
     const raw = localStorage.getItem(key);
     if (!raw) return JSON.parse(JSON.stringify(fallback));
     const parsed = JSON.parse(raw);
+    // A stored "null" (e.g. from an older backup) is never a valid collection
+    // or scalar default — fall back rather than propagating null into the store.
+    if (parsed === null || parsed === undefined) {
+      return JSON.parse(JSON.stringify(fallback));
+    }
     if (Array.isArray(fallback) && !Array.isArray(parsed)) {
       return JSON.parse(JSON.stringify(fallback));
     }

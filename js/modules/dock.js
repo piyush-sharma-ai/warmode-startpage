@@ -4,6 +4,7 @@
 
 import { store } from './storage.js';
 import { escapeHTML, safeHostname, FALLBACK_ICON, showToast, createElement, normalizeUrl } from './core.js';
+import { prepareModal, restoreModal } from './modal.js';
 
 let dragDockIndex = null;
 
@@ -137,12 +138,15 @@ export function openDockModal(editIdx = null) {
     colorInput.value = '';
     if (titleEl) titleEl.textContent = 'ADD DOCK APP';
   }
+  prepareModal('dock-modal');
   document.getElementById('dock-modal').classList.add('show');
   nameInput.focus();
 }
 
 export function closeDockModal() {
-  document.getElementById('dock-modal').classList.remove('show');
+  const modal = document.getElementById('dock-modal');
+  if (modal) modal.classList.remove('show');
+  restoreModal('dock-modal');
 }
 
 export function saveDockSite() {

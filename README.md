@@ -46,7 +46,7 @@ Most modern browser new-tab pages are cluttered with sponsored news, tracking sc
 
 > The interface remains serene, minimal, and soothing to the eyes. Beneath the surface, it houses a full suite of local cybersecurity utilities, procedural focus audio, and quick terminal helpers.
 
-- 🛡️ **100% Private & Local:** Zero logins, zero remote analytics, and zero external trackers.
+- 🛡️ **100% Private & Local:** Zero logins, zero remote analytics, and zero external trackers. Fonts are **self-hosted** (no CDN request on load), so the app shell runs fully offline from disk. The only optional network call is the on-demand favicon lookup for your own bookmarked links, which degrades gracefully to a local icon if offline.
 - ⚡ **Pure Vanilla Architecture:** Zero build steps, zero `node_modules`, and zero frameworks. Runs directly out of the box in any modern browser.
 - 💾 **Persistent Storage:** All custom links, habits, notes, and timers are saved straight to your browser's `localStorage` with built-in JSON backup and restore capabilities.
 
@@ -113,7 +113,14 @@ Most modern browser new-tab pages are cluttered with sponsored news, tracking sc
 
 > **Zero build required.** `js/bundle.js` is committed, so the startpage runs
 > straight from disk. If you edit anything under `js/`, regenerate the bundle
-> with `python3 tools/build_bundle.py`.
+> with `python3 tools/build_bundle.py` (or `npm run bundle`).
+
+**Development checks** (no dependencies — uses only Node + Python):
+
+```bash
+npm test          # runs the pure-logic test suite (tools/test.mjs)
+npm run check     # tests + regenerate the bundle + theme-consistency gate
+```
 
 <details open>
 <summary><b>📦 Step 1: Download the Files</b></summary>

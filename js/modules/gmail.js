@@ -5,6 +5,7 @@
 import { store } from './storage.js';
 import { escapeHTML, showToast, createElement, normalizeUrl } from './core.js';
 import { closeCheatOverlay, closeOmniSuggestions } from './overlay.js';
+import { prepareModal, restoreModal } from './modal.js';
 
 export function initGmail() {
   renderGmails();
@@ -108,6 +109,7 @@ export function openGmailModal(editIdx = null) {
     urlInput.value = '';
     if (titleEl) titleEl.textContent = 'ADD EMAIL ACCOUNT';
   }
+  prepareModal('gmail-modal');
   document.getElementById('gmail-modal').classList.add('show');
   nameInput.focus();
 }
@@ -115,6 +117,7 @@ export function openGmailModal(editIdx = null) {
 export function closeGmailModal() {
   const modal = document.getElementById('gmail-modal');
   if (modal) modal.classList.remove('show');
+  restoreModal('gmail-modal');
 }
 
 export function saveGmailAccount() {

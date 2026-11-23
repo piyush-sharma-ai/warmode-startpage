@@ -28,9 +28,10 @@ BOOTSTRAP_LIGHT_ID = "daylight"
 # Dependency order: leaves first, entry last. The bundle wraps each module in
 # a lazy factory so circular imports still resolve.
 ORDER = [
-    "core", "storage", "overlay", "shortcuts", "zen", "breathing", "hero",
-    "focus", "audio", "theme", "backup", "scratchpad", "widget", "dock",
-    "bookmarks", "gmail", "tools", "timer", "search", "edit", "keyboard",
+    "core", "modal", "storage", "overlay", "shortcuts", "zen", "breathing",
+    "hero", "focus", "audio", "theme", "backup", "scratchpad", "widget",
+    "dock", "bookmarks", "gmail", "tools", "timer", "search", "edit",
+    "keyboard",
 ]
 
 IMPORT_RE = re.compile(r"import\s+[\s\S]*?from\s+['\"][^'\"]+['\"];?")

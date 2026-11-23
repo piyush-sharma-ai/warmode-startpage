@@ -4,6 +4,7 @@
 
 import { store } from './storage.js';
 import { escapeHTML, safeHostname, FALLBACK_ICON, showToast, createElement, normalizeUrl } from './core.js';
+import { prepareModal, restoreModal } from './modal.js';
 
 let dragSource = { c: null, l: null };
 
@@ -179,12 +180,15 @@ export function openSiteModal(colIndex, linkIndex = null) {
     urlInput.value = '';
     if (titleEl) titleEl.textContent = 'ADD NEW TARGET_NODE';
   }
+  prepareModal('site-modal');
   document.getElementById('site-modal').classList.add('show');
   nameInput.focus();
 }
 
 export function closeSiteModal() {
-  document.getElementById('site-modal').classList.remove('show');
+  const modal = document.getElementById('site-modal');
+  if (modal) modal.classList.remove('show');
+  restoreModal('site-modal');
 }
 
 export function saveNewSite() {
