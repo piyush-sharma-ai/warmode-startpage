@@ -149,12 +149,6 @@
         margin-right: 0.2rem;
       }
 
-      /* Keep timer.js's own clock node out of the layout; the visible clock
-         above is driven by the inline script at the end of <body>. */
-      #clock-display {
-        display: none !important;
-      }
-
       /* ---- Banner (hero heading + message) --------------------------- */
       #greeting {
         font-size: clamp(1.75rem, 3.8vw, 2.75rem);
@@ -245,7 +239,7 @@
                     <div class="term__line"><span class="term__dim" aria-hidden="true">┌──(</span><span id="prompt-user" class="term__user" onblur="saveHeroText()" spellcheck="false">root💀kali</span><span class="term__dim" aria-hidden="true">)-[</span><span id="prompt-path" class="term__path" onblur="saveHeroText()" spellcheck="false">~</span><span class="term__dim" aria-hidden="true">]</span></div>
                     <div class="term__line"><span class="term__dim" aria-hidden="true">└─</span><span id="prompt-hash" class="term__root" onblur="saveHeroText()" spellcheck="false">#</span></div>
                 </div>
-                <span id="clock-display" aria-hidden="true" hidden>00:00:00</span><span id="term-clock" class="term__clock" onclick="togglePomodoro()" role="timer" aria-live="off" title="Live clock — click to start/stop 25m Pomodoro (⌥P)"></span>
+                <span id="term-clock" class="term__clock" onclick="togglePomodoro()" role="timer" aria-live="off" title="Live clock — click to start/stop 25m Pomodoro (⌥P)"></span>
             </section>
             <div id="day-progress" title="Share of today elapsed">
                 <div><b id="dp-bar"></b></div>
@@ -276,7 +270,7 @@
         <section id="app">
             <div id="hero">
                 <!-- Animated Cyber-Zen Reactor Mandala -->
-                <aside id="zen-aside" onclick="toggleBreathing()" title="Click for 60s Box Breathing Pacer (⌥B)">
+                <aside id="zen-aside" onclick="toggleBreathing()" title="Click for 64s Box Breathing Pacer (⌥B)">
                     <svg class="cyber-zen-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
                         <circle class="cz-ring-outer" cx="60" cy="60" r="54" stroke="var(--color-primary)" stroke-width="1.5" stroke-opacity="0.35" stroke-dasharray="6 6" />
                         <circle class="cz-ring-mid" cx="60" cy="60" r="44" stroke="var(--color-primary)" stroke-width="1.8" stroke-opacity="0.55" stroke-dasharray="28 14" />

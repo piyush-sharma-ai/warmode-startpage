@@ -66,9 +66,5 @@ export function toggleBreathing() {
     setAnchor(anchor, phase.label, phase.scale);
   }, PHASE_MS);
 
-  showToast('Box Breathing Started (4-4-4-4 · 60s)');
-}
-
-export function stopBreathingGuide() {
-  stopBreathing(document.getElementById('breathe-anchor'), false);
+  showToast('Box Breathing Started (4-4-4-4 · 64s)');
 }

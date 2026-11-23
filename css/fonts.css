@@ -1,0 +1,61 @@
+/* ============================================================================
+   SELF-HOSTED FONTS — Inter + JetBrains Mono
+   ---------------------------------------------------------------------------
+   Fonts are bundled locally (Latin subset, weights 400/500/600) so the page
+   makes ZERO requests to fonts.googleapis.com on load. This keeps the
+   "100% offline / no external dependencies" promise true while preserving the
+   intended Inter + JetBrains Mono typography.
+
+   The family names ('Inter', 'JetBrains Mono') match the font stacks in
+   tokens.css, so no markup or token changes are required. font-display: swap
+   renders text immediately with the system fallback and swaps in the webfont
+   once it arrives, so there is no invisible-text flash.
+   ============================================================================ */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/inter-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/inter-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/inter-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/jetbrains-mono-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/jetbrains-mono-latin-600-normal.woff2') format('woff2');
+}

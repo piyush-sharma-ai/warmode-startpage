@@ -83,11 +83,6 @@ export function toggleScratchpad() {
   else openScratchpad();
 }
 
-export function isScratchpadOpen() {
-  const wrap = document.getElementById('scratchpad-wrap');
-  return !!wrap && wrap.classList.contains('show');
-}
-
 export function downloadScratchpad() {
   const sp = document.getElementById('scratchpad');
   if (!sp || !sp.value.trim()) {

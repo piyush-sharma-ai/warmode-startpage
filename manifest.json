@@ -1,19 +1,19 @@
 {
   "manifest_version": 3,
-  "version": "1.0",
-  "name": "P1YUSH theme",
-  "description": "Custom P1YUSH Theme for Brave",
+  "version": "2.0.0",
+  "name": "WarMode theme",
+  "description": "WarMode browser theme — aligned with the default Agni palette.",
   "theme": {
     "colors": {
-      "frame": [26, 27, 38],
-      "frame_inactive": [30, 31, 45],
-      "toolbar": [30, 31, 45],
-      "tab_text": [192, 202, 245],
-      "tab_background_text": [86, 95, 137],
-      "bookmark_text": [192, 202, 245],
-      "ntp_background": [26, 27, 38],
-      "ntp_text": [192, 202, 245],
-      "button_background": [30, 31, 45]
+      "frame": [20, 16, 14],
+      "frame_inactive": [28, 23, 20],
+      "toolbar": [28, 23, 20],
+      "tab_text": [196, 187, 181],
+      "tab_background_text": [148, 137, 126],
+      "bookmark_text": [196, 187, 181],
+      "ntp_background": [20, 16, 14],
+      "ntp_text": [196, 187, 181],
+      "button_background": [28, 23, 20]
     }
   }
 }

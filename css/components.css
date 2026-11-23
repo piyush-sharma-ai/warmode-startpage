@@ -328,18 +328,6 @@
     background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
   }
 
-  #clock-display {
-    cursor: pointer;
-    margin-left: 10px;
-    font-weight: var(--font-weight-semibold);
-    font-variant-numeric: tabular-nums;
-    transition: color var(--transition-fast);
-  }
-
-  #clock-display:hover {
-    color: var(--color-warning);
-  }
-
   #day-progress {
     display: flex;
     align-items: center;

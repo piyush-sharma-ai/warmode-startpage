@@ -1,0 +1,13 @@
+{
+  "name": "warmode-startpage",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A calm, distraction-free CyberSec & Developer browser startpage. Zero-build, vanilla JS, offline-first.",
+  "scripts": {
+    "bundle": "python3 tools/build_bundle.py",
+    "test": "node tools/test.mjs",
+    "check": "node tools/test.mjs && python3 tools/build_bundle.py"
+  },
+  "license": "MIT"
+}

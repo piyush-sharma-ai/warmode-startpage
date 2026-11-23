@@ -144,16 +144,24 @@ class Store {
   exportAll() {
     const payload = {};
     Object.entries(STORAGE_KEYS).forEach(([key, storageKey]) => {
-      payload[storageKey] = localStorage.getItem(storageKey);
+      // Only persist keys that actually exist. Exporting null (a key that was
+      // never written) would, on restore, store the string "null" and corrupt
+      // the round-trip for object/array collections.
+      const value = localStorage.getItem(storageKey);
+      if (value !== null) payload[storageKey] = value;
     });
     return payload;
   }
 
   importAll(data) {
     Object.entries(data).forEach(([storageKey, value]) => {
-      if (storageKey.startsWith('warmode_')) {
-        localStorage.setItem(storageKey, value);
-      }
+      // Ignore anything that is not a WarMode key, and refuse null/undefined
+      // (and the literal string "null") so a bad export can never write a
+      // corrupt sentinel that would crash collectors on load.
+      if (!storageKey.startsWith('warmode_')) return;
+      if (value === null || value === undefined) return;
+      if (value === 'null') return;
+      localStorage.setItem(storageKey, value);
     });
     this.loadAll();
     Object.keys(this.data).forEach(key => this.notify(key, this.data[key]));

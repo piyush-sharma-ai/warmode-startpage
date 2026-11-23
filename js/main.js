@@ -64,7 +64,7 @@ const GLOBAL_HANDLERS = {
   // Toasts + reset
   showToast, restoreDefaultSites,
   // Appearance
-  cycleTheme, toggleDarkMode,
+  toggleDarkMode,
 };
 
 Object.entries(GLOBAL_HANDLERS).forEach(([name, fn]) => {
