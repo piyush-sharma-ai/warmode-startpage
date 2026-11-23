@@ -27,7 +27,7 @@
 </div>
 
 
-<p><b>Where Peak Calmness Meets God-Level OffSec Productivity.</b></p>
+<p><b>Where Peak Calmness Meets Peak Productivity.</b></p>
 <p><i>A distraction-free, aesthetic, offline-first browser command center engineered for developers, security researchers, and deep-focus work.</i></p>
 <p>
 <a href="https://github.com/piyush-security/warmode-startpage"><img src="https://img.shields.io/badge/Release-v2.0-f26a2e?style=for-the-badge&logo=github&logoColor=white" alt="Release Version" /></a>
